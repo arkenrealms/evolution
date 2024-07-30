@@ -14,4 +14,4 @@ This is basically the game server, runs logic, coordinates with the realm server
 
 ## Client
 
-You'll have to request this privately.
+You'll have to request access in Telegram: telegram.arken.gg
