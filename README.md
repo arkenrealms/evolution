@@ -14,4 +14,4 @@ This is basically the game server, runs logic, coordinates with the realm server
 
 ## Client
 
-You'll have to request access in Telegram: telegram.arken.gg
+This is the main client built in Unity, but since it has purchased assets, you'll have to request repo access in Telegram: telegram.arken.gg
