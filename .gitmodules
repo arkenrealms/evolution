@@ -10,7 +10,3 @@
 	path = packages/shard
 	url = git@github.com:arken-engineering/evolution-shard.git
 	branch = main
-[submodule "packages/client"]
-	path = packages/client
-	url = git@github.com:arken-engineering/evolution-client.git
-	branch = main
