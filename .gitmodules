@@ -1,12 +1,12 @@
 [submodule "packages/protocol"]
 	path = packages/protocol
-	url = git@github.com:arken-engineering/evolution-protocol.git
+	url = https://github.com/arkenrealms/evolution-protocol.git
 	branch = main
 [submodule "packages/realm"]
 	path = packages/realm
-	url = git@github.com:arken-engineering/evolution-realm.git
+	url = https://github.com/arkenrealms/evolution-realm.git
 	branch = main
 [submodule "packages/shard"]
 	path = packages/shard
-	url = git@github.com:arken-engineering/evolution-shard.git
+	url = https://github.com/arkenrealms/evolution-shard.git
 	branch = main
