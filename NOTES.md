@@ -51,6 +51,13 @@ This repository is currently a submodule container. Core code lives in nested su
 - Result unchanged:
   - `fatal: No url found for submodule path 'packages/client' in .gitmodules`
 
+### Re-verification (2026-02-17 3:42 PM PST)
+- Re-ran from repo root:
+  - `git -C arken/packages/evolution submodule sync --recursive`
+  - `git -C arken/packages/evolution submodule update --init --recursive`
+- Result unchanged:
+  - `fatal: No url found for submodule path 'packages/client' in .gitmodules`
+
 ### Recommended follow-ups
 1. Normalize nested submodule URLs to HTTPS where possible.
 2. Ensure `.gitmodules` entries exist for every nested submodule path (including `packages/client/*`).
