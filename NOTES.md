@@ -21,6 +21,15 @@ This repository is currently a submodule container. Core code lives in nested su
   - `packages/client` exists as a gitlink entry in repository tree,
   - but `.gitmodules` currently defines only `packages/protocol`, `packages/realm`, and `packages/shard`.
 
+### Re-verification (2026-02-17 07:50 PST)
+- Re-read nested `.gitmodules` and validated HEAD tree entries directly via `git ls-tree`.
+- Current gitlinks in `packages/`:
+  - `packages/client` -> `96bdcf55698334d77cc36f4c9c23e676a3106995`
+  - `packages/protocol` -> `be0d70364769ec6cce4bbd28911bb7912e96a00f`
+  - `packages/realm` -> `b1b9cb6bfb4775f9a01114110fbc5aea4b7ec18b`
+  - `packages/shard` -> `9780188e86feffa95c1951f0621a47821e21f22f`
+- `.gitmodules` still has no stanza for `packages/client`, so recursive init remains structurally blocked regardless of credentials.
+
 ### Recommended follow-ups
 1. Normalize nested submodule URLs to HTTPS where possible.
 2. Ensure `.gitmodules` entries exist for every nested submodule path (including `packages/client/*`).
