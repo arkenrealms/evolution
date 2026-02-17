@@ -30,6 +30,13 @@ This repository is currently a submodule container. Core code lives in nested su
   - `packages/shard` -> `9780188e86feffa95c1951f0621a47821e21f22f`
 - `.gitmodules` still has no stanza for `packages/client`, so recursive init remains structurally blocked regardless of credentials.
 
+### Re-verification (2026-02-17 1:16 PM PST)
+- Re-ran from repo root:
+  - `git submodule sync --recursive`
+  - `git submodule update --init --recursive`
+- Result unchanged:
+  - `fatal: No url found for submodule path 'packages/client' in .gitmodules`
+
 ### Recommended follow-ups
 1. Normalize nested submodule URLs to HTTPS where possible.
 2. Ensure `.gitmodules` entries exist for every nested submodule path (including `packages/client/*`).
