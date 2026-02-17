@@ -3,14 +3,17 @@
 ## Folder
 `arken/packages/evolution/packages`
 
-## Snapshot
-- Files: 1
-- Subfolders: 4
+## Purpose
+- Container for Evolution child package submodules (`client`, `protocol`, `realm`, `shard`).
 
-## Notable contents
-- files: README.md
-- dirs: client, protocol, realm, shard
+## Key files
+- `README.md`
+- child paths: `client/`, `protocol/`, `realm/`, `shard/` (gitlink submodules; contents not initialized in this workspace)
 
-## Next actions
-- Continue chunked analysis into nested submodules/folders.
-- Add/update concise README.md coverage and path-header normalization while touching files.
+## Risks
+- Cross-package protocol/state compatibility cannot be validated without nested checkouts.
+- Integration regressions may be missed until submodule sync occurs.
+
+## Next test/protocol checks
+- Run `git submodule update --init --recursive` from `arken/packages/evolution`.
+- Per child package: run lint/typecheck/tests, plus protocol compatibility and state-transition/integration checks.
