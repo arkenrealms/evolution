@@ -12,5 +12,6 @@
 - dirs: packages
 
 ## Next actions
-- Continue chunked analysis into nested submodules/folders.
+- Resolve submodule metadata mismatch for `packages/client` (gitlink exists but missing `.gitmodules` mapping) so recursive checkout can succeed.
+- Continue chunked deepest-first analysis into nested submodules/folders once checkout is unblocked.
 - Add/update concise README.md coverage and path-header normalization while touching files.

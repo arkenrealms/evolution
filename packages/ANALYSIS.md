@@ -15,5 +15,6 @@
 - Integration regressions may be missed until submodule sync occurs.
 
 ## Next test/protocol checks
-- Run `git submodule update --init --recursive` from `arken/packages/evolution`.
+- Fix `.gitmodules` mapping for `packages/client` (current recursive init fails: `No url found for submodule path 'packages/client' in .gitmodules`).
+- Re-run `git submodule update --init --recursive` from `arken/packages/evolution` once mapping is corrected.
 - Per child package: run lint/typecheck/tests, plus protocol compatibility and state-transition/integration checks.
