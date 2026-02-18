@@ -16,6 +16,6 @@
 - `packages/client` gitlink is present in HEAD (`96bdcf55698334d77cc36f4c9c23e676a3106995`) but missing from `.gitmodules`, so recursive init is currently impossible.
 
 ## Next test/protocol checks
-- Fix `.gitmodules` mapping for `packages/client` (current recursive init fails: `No url found for submodule path 'packages/client' in .gitmodules`).
-- Re-run `git submodule update --init --recursive` from `arken/packages/evolution` once mapping is corrected.
-- Per child package: run lint/typecheck/tests, plus protocol compatibility and state-transition/integration checks.
+- Temporary skip active: do not analyze `packages/client` or run recursive submodule sync/update while this policy is in force.
+- Continue wrapper-level analysis/docs for non-client scope (`protocol`, `realm`, `shard` gitlink metadata and ownership notes).
+- When skip is lifted, repair `.gitmodules` mapping for `packages/client` and only then resume recursive init + child-package lint/typecheck/tests.

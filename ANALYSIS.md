@@ -12,6 +12,9 @@
 - dirs: packages
 
 ## Next actions
-- Resolve submodule metadata mismatch for `packages/client` (gitlink `96bdcf55698334d77cc36f4c9c23e676a3106995` exists but missing `.gitmodules` mapping) so recursive checkout can succeed.
-- Continue chunked deepest-first analysis into nested submodules/folders once checkout is unblocked.
-- Add/update concise README.md coverage and path-header normalization while touching files.
+- Temporary skip policy active:
+  - ignore `packages/evolution/packages/client`,
+  - ignore `evolution-unity` integration work,
+  - do **not** run `git submodule sync/update --recursive` while skip remains active.
+- Continue non-client analysis/docs chunks in this wrapper repo (`README.md`, `ANALYSIS.md`, `NOTES.md`, `.gitmodules` profile) and defer nested-source passes until skip is lifted.
+- Keep documenting gitlink/submodule metadata drift for `packages/client` without executing recursive init commands.

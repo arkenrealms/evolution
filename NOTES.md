@@ -94,7 +94,11 @@ This repository is currently a submodule container. Core code lives in nested su
   - `fatal: No url found for submodule path 'packages/client' in .gitmodules`
 
 ### Recommended follow-ups
-1. Normalize nested submodule URLs to HTTPS where possible.
-2. Ensure `.gitmodules` entries exist for every nested submodule path (including `packages/client/*`).
-3. Add CI check that verifies submodules initialize cleanly.
-4. Once nested repos are accessible, run protocol + test coverage review and add folder `README.md` / `NOTES.md` in protocol/test directories.
+1. Honor temporary skip policy until revoked:
+   - ignore `packages/client` and `evolution-unity` integration work,
+   - avoid `git submodule sync/update --recursive` during this period.
+2. Continue non-client wrapper analysis/docs (`README.md`, `ANALYSIS.md`, `NOTES.md`, `.gitmodules`) so repo context remains current.
+3. After skip lifts, normalize nested submodule URLs to HTTPS where possible.
+4. Ensure `.gitmodules` entries exist for every nested submodule path (including `packages/client/*`).
+5. Add CI check that verifies submodules initialize cleanly.
+6. Once nested repos are accessible, run protocol + test coverage review and add folder `README.md` / `NOTES.md` in protocol/test directories.
