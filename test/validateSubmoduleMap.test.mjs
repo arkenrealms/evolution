@@ -45,6 +45,8 @@ test('normalizeSubmodulePath strips wrappers and slash variants', () => {
   assert.equal(normalizeSubmodulePath('packages/realm ; mirrored path'), 'packages/realm');
   assert.equal(normalizeSubmodulePath('"packages/shard-beta"'), 'packages/shard-beta');
   assert.equal(normalizeSubmodulePath("'packages/sigil-protocol'"), 'packages/sigil-protocol');
+  assert.equal(normalizeSubmodulePath('"packages/proto#col" # note'), 'packages/proto#col');
+  assert.equal(normalizeSubmodulePath("'packages/rea;lm' ; note"), 'packages/rea;lm');
 });
 
 test('parseGitmodules reports duplicate path mappings deterministically', () => {
@@ -70,16 +72,16 @@ test('parseGitmodules accepts inline comments on path lines', () => {
 [submodule "packages/realm"]
   path = packages/realm ; canary
 [submodule "packages/shard"]
-  path = "packages/shard-beta"
+  path = "packages/shard-beta#v2" # qa branch
 [submodule "packages/sigil-protocol"]
-  path = 'packages/sigil-protocol'
+  path = 'packages/sigil;protocol' ; integration
 `.trim();
 
   const parsed = parseGitmodules(fixture);
   assert.equal(parsed.entries.get('packages/protocol'), 'packages/protocol');
   assert.equal(parsed.entries.get('packages/realm'), 'packages/realm');
-  assert.equal(parsed.entries.get('packages/shard-beta'), 'packages/shard');
-  assert.equal(parsed.entries.get('packages/sigil-protocol'), 'packages/sigil-protocol');
+  assert.equal(parsed.entries.get('packages/shard-beta#v2'), 'packages/shard');
+  assert.equal(parsed.entries.get('packages/sigil;protocol'), 'packages/sigil-protocol');
 });
 
 test('parseGitmodules reports invalid empty path mappings', () => {

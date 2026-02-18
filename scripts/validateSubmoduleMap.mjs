@@ -3,19 +3,31 @@ import { execFileSync } from 'node:child_process';
 import fs from 'node:fs';
 import path from 'node:path';
 
-export function normalizeSubmodulePath(value) {
-  let normalized = String(value ?? '').trim();
-  const isQuoted = /^".*"$/.test(normalized);
+function stripInlineComment(rawValue) {
+  let quote = null;
 
-  if (!isQuoted) {
-    if (normalized.includes('#')) {
-      normalized = normalized.split('#')[0].trim();
+  for (let i = 0; i < rawValue.length; i += 1) {
+    const ch = rawValue[i];
+
+    if ((ch === '"' || ch === "'") && rawValue[i - 1] !== '\\') {
+      if (!quote) {
+        quote = ch;
+      } else if (quote === ch) {
+        quote = null;
+      }
+      continue;
     }
-    if (normalized.includes(';')) {
-      normalized = normalized.split(';')[0].trim();
+
+    if (!quote && (ch === '#' || ch === ';')) {
+      return rawValue.slice(0, i).trim();
     }
   }
 
+  return rawValue.trim();
+}
+
+export function normalizeSubmodulePath(value) {
+  let normalized = stripInlineComment(String(value ?? '').trim());
   normalized = normalized.replace(/^"(.+)"$/, '$1').replace(/^'(.+)'$/, '$1').replace(/\\/g, '/');
 
   while (normalized.startsWith('./')) {
