@@ -1,4 +1,4 @@
-# Tests
+# arken/packages/evolution/test
 
 Minimal wrapper-level regression checks for `arken/packages/evolution`.
 
@@ -11,4 +11,4 @@ Minimal wrapper-level regression checks for `arken/packages/evolution`.
 - guards against newly introduced unmapped gitlinks (except explicit temporary client skip).
 - guards stale `.gitmodules` mappings that no longer resolve to `HEAD` gitlinks.
 - guards duplicate `.gitmodules` path mappings (fixture-level parser behavior + live-repo check).
-- verifies parser normalization for quoted `.gitmodules` `path` values.
+- verifies parser path normalization for quoted, prefixed (`./`), trailing-slash, and backslash-separated `path` values.

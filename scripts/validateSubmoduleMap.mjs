@@ -3,6 +3,14 @@ import { execFileSync } from 'node:child_process';
 import fs from 'node:fs';
 import path from 'node:path';
 
+export function normalizeSubmodulePath(value) {
+  return value
+    .trim()
+    .replace(/^"(.+)"$/, '$1')
+    .replace(/\\/g, '/')
+    .replace(/\/+$|^\.\//g, '');
+}
+
 export function parseGitmodules(gitmodulesContent) {
   const lines = gitmodulesContent.split(/\r?\n/);
   const entries = new Map();
@@ -24,7 +32,7 @@ export function parseGitmodules(gitmodulesContent) {
     const match = line.match(/^path\s*=\s*(.+)$/);
     if (!match) continue;
 
-    const mappedPath = match[1].trim().replace(/^"(.+)"$/, '$1');
+    const mappedPath = normalizeSubmodulePath(match[1]);
     if (entries.has(mappedPath)) {
       const prior = entries.get(mappedPath);
       const dupes = duplicateMappings.get(mappedPath) ?? [prior];

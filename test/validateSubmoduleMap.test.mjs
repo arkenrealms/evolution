@@ -4,7 +4,11 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import test from 'node:test';
 
-import { parseGitmodules, validateSubmoduleMap } from '../scripts/validateSubmoduleMap.mjs';
+import {
+  normalizeSubmodulePath,
+  parseGitmodules,
+  validateSubmoduleMap
+} from '../scripts/validateSubmoduleMap.mjs';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -31,12 +35,18 @@ test('client path stays explicitly ignored under temporary skip policy', () => {
   assert.ok(!result.unexpectedGitlinks.includes('packages/client'));
 });
 
+test('normalizeSubmodulePath strips wrappers and slash variants', () => {
+  assert.equal(normalizeSubmodulePath('"packages/protocol/"'), 'packages/protocol');
+  assert.equal(normalizeSubmodulePath('./packages/realm'), 'packages/realm');
+  assert.equal(normalizeSubmodulePath('packages\\shard'), 'packages/shard');
+});
+
 test('parseGitmodules reports duplicate path mappings deterministically', () => {
   const fixture = `
 [submodule "packages/protocol"]
-  path = "packages/protocol"
+  path = "packages/protocol/"
 [submodule "packages/protocol-mirror"]
-  path = packages/protocol
+  path = ./packages/protocol
 `.trim();
 
   const parsed = parseGitmodules(fixture);
