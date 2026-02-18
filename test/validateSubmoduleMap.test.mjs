@@ -76,6 +76,19 @@ test('parseGitmodules accepts case-insensitive path keys', () => {
   assert.equal(parsed.entries.get('packages/shard'), 'packages/shard');
 });
 
+test('parseGitmodules accepts section headers with spacing, comments, and mixed case', () => {
+  const fixture = `
+ [Submodule "packages/protocol"] ; canonical
+  path = packages/protocol
+[  submodule "packages/realm"  ] # keep
+  path = packages/realm
+`.trim();
+
+  const parsed = parseGitmodules(fixture);
+  assert.equal(parsed.entries.get('packages/protocol'), 'packages/protocol');
+  assert.equal(parsed.entries.get('packages/realm'), 'packages/realm');
+});
+
 test('parseGitmodules reports duplicate path mappings deterministically', () => {
   const fixture = `
 [submodule "packages/protocol"]

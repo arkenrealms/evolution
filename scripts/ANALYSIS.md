@@ -5,6 +5,7 @@ Provides lightweight guardrails that can run without recursive submodule initial
 
 ## Current scope
 - Parse `.gitmodules` path stanzas (including single/double-quoted `path = ...` variants and case-insensitive key forms like `Path = ...`).
+- Accept flexible section headers (`[submodule ...]`) with mixed case, extra bracket spacing, and inline trailing comments for compatibility with hand-edited gitconfig-style files.
 - Normalize path variants (repeated `./`, duplicate `/`, trailing slash, backslash separators) for deterministic matching.
 - Ignore inline path comments (`#`, `;`) on `.gitmodules` `path = ...` entries with quote-aware parsing, so annotated mappings still validate predictably while keeping comment markers that are part of quoted paths.
 - Preserve escaped comment markers (`\#`, `\;`) in unquoted path values so valid literal path names are not truncated by comment stripping.

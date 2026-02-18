@@ -69,7 +69,8 @@ export function parseGitmodules(gitmodulesContent) {
     const line = rawLine.trim();
     if (!line) continue;
 
-    const section = line.match(/^\[submodule\s+"(.+)"\]$/);
+    const normalizedSectionLine = stripInlineComment(rawLine).trim();
+    const section = normalizedSectionLine.match(/^\[\s*submodule\s+"(.+)"\s*\]$/i);
     if (section) {
       current = section[1];
       continue;
