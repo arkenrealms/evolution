@@ -51,6 +51,10 @@ export function normalizeSubmodulePath(value) {
   }
 
   normalized = normalized.replace(/\/+/g, '/').replace(/\/+$/, '');
+  normalized = normalized
+    .split('/')
+    .filter((segment) => segment !== '.')
+    .join('/');
   return normalized;
 }
 

@@ -39,6 +39,7 @@ test('normalizeSubmodulePath strips wrappers and slash variants', () => {
   assert.equal(normalizeSubmodulePath('"packages/protocol/"'), 'packages/protocol');
   assert.equal(normalizeSubmodulePath('./packages/realm'), 'packages/realm');
   assert.equal(normalizeSubmodulePath('././packages/realm//'), 'packages/realm');
+  assert.equal(normalizeSubmodulePath('packages/./protocol'), 'packages/protocol');
   assert.equal(normalizeSubmodulePath('packages\\\\shard'), 'packages/shard');
   assert.equal(normalizeSubmodulePath('packages//shard///'), 'packages/shard');
   assert.equal(normalizeSubmodulePath('packages/protocol # prod mapping'), 'packages/protocol');
@@ -74,6 +75,19 @@ test('parseGitmodules accepts case-insensitive path keys', () => {
   assert.equal(parsed.entries.get('packages/protocol'), 'packages/protocol');
   assert.equal(parsed.entries.get('packages/realm'), 'packages/realm');
   assert.equal(parsed.entries.get('packages/shard'), 'packages/shard');
+});
+
+test('parseGitmodules normalizes dot-segment path mappings', () => {
+  const fixture = `
+[submodule "packages/protocol"]
+  path = packages/./protocol
+[submodule "packages/realm"]
+  path = ./packages/realm/.
+`.trim();
+
+  const parsed = parseGitmodules(fixture);
+  assert.equal(parsed.entries.get('packages/protocol'), 'packages/protocol');
+  assert.equal(parsed.entries.get('packages/realm'), 'packages/realm');
 });
 
 test('parseGitmodules accepts section headers with spacing, comments, and mixed case', () => {
@@ -364,7 +378,7 @@ test('gitlink path variants are normalized before comparison', () => {
 
   const result = validateSubmoduleMap(repoRoot, {
     gitmodulesContent: fixture,
-    gitlinks: ['./packages/protocol/', 'packages\\realm', 'packages//shard']
+    gitlinks: ['./packages/protocol/.', 'packages\\realm', 'packages//shard/./']
   });
 
   assert.equal(result.ok, true);
