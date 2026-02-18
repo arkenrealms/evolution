@@ -16,6 +16,7 @@ Provides lightweight guardrails that can run without recursive submodule initial
 - Detect duplicate `.gitmodules` path mappings to prevent ambiguous ownership.
 - Detect per-owner conflicting path re-maps (same `[submodule "..."]` owner bound to multiple normalized `path` values), aggregating repeats into a single deterministic conflict record.
 - Reject invalid empty/comment-only `.gitmodules` `path = ...` mappings before they can silently collapse to root-equivalent keys (including explicit blank and quoted-empty `path =` assignments).
+- Reject unsafe `.gitmodules` path mappings that try to escape/anchor outside repo scope (e.g., `../...`, `/...`, `C:/...`).
 - Detect submodule-owner sections that omit a `path = ...` mapping entirely, preventing silent pass-through of partially-defined submodule stanzas.
 - Detect stale `.gitmodules` mappings that are no longer present as `HEAD` gitlinks (`mappedWithoutGitlink`).
 - Detect duplicate normalized gitlink paths in `HEAD` listing (`duplicateGitlinks`) to catch parser/input regressions that collapse distinct raw paths into the same canonical key.

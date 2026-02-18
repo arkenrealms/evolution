@@ -171,7 +171,7 @@ test('parseGitmodules accepts inline comments on path lines', () => {
   assert.equal(parsed.entries.get('packages/rea;lm'), 'packages/escaped-semicolon');
 });
 
-test('parseGitmodules reports invalid empty path mappings', () => {
+test('parseGitmodules reports invalid empty/unsafe path mappings', () => {
   const fixture = `
 [submodule "packages/protocol"]
   path = packages/protocol
@@ -187,6 +187,12 @@ test('parseGitmodules reports invalid empty path mappings', () => {
   path = ''
 [submodule "packages/quoted-space"]
   path = "   "
+[submodule "packages/traversal"]
+  path = ../packages/protocol
+[submodule "packages/absolute"]
+  path = /packages/protocol
+[submodule "packages/windows-absolute"]
+  path = C:\\packages\\protocol
 `.trim();
 
   const parsed = parseGitmodules(fixture);
@@ -197,7 +203,10 @@ test('parseGitmodules reports invalid empty path mappings', () => {
     { owner: 'packages/empty', rawPath: '' },
     { owner: 'packages/quoted-empty', rawPath: '""' },
     { owner: 'packages/single-quoted-empty', rawPath: "''" },
-    { owner: 'packages/quoted-space', rawPath: '"   "' }
+    { owner: 'packages/quoted-space', rawPath: '"   "' },
+    { owner: 'packages/traversal', rawPath: '../packages/protocol' },
+    { owner: 'packages/absolute', rawPath: '/packages/protocol' },
+    { owner: 'packages/windows-absolute', rawPath: 'C:\\packages\\protocol' }
   ]);
 });
 

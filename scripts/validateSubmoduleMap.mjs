@@ -54,6 +54,13 @@ export function normalizeSubmodulePath(value) {
   return normalized;
 }
 
+function isInvalidSubmodulePath(mappedPath) {
+  if (!mappedPath) return true;
+  if (mappedPath.startsWith('/')) return true;
+  if (/^[A-Za-z]:\//.test(mappedPath)) return true;
+  return mappedPath.split('/').includes('..');
+}
+
 export function parseGitmodules(gitmodulesContent) {
   const lines = String(gitmodulesContent ?? '')
     .replace(/^\uFEFF/, '')
@@ -91,7 +98,7 @@ export function parseGitmodules(gitmodulesContent) {
     }
 
     const mappedPath = normalizeSubmodulePath(match[1]);
-    if (!mappedPath) {
+    if (isInvalidSubmodulePath(mappedPath)) {
       invalidMappings.push({ owner: current, rawPath: match[1] });
       continue;
     }
