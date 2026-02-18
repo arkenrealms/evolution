@@ -24,6 +24,7 @@ Provides lightweight guardrails that can run without recursive submodule initial
 - Allow explicit temporary skip for `packages/client`.
 - Guard against invalid validator configuration where `ignoredGitlinks` overlaps required paths.
 - Guard against invalid validator configuration where `requiredPaths` or `ignoredGitlinks` contains empty/whitespace-only entries (surfaces as explicit config errors instead of silently normalizing to empty paths).
+- Guard against duplicate normalized path entries in `requiredPaths` and `ignoredGitlinks` so copy/paste drift cannot hide contradictory config intent behind de-duplication.
 
 ## Follow-ups
 - Migrate wrapper tests from `node:test` to Jest + TypeScript when package-level Jest toolchain is introduced.

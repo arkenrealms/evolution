@@ -20,5 +20,6 @@ Minimal wrapper-level regression checks for `arken/packages/evolution`.
 - verifies injected gitlink path variants are normalized before required-path comparison.
 - verifies validator configuration cannot ignore required submodule paths.
 - verifies validator configuration rejects empty/whitespace-only required or ignored path entries.
+- verifies validator configuration rejects duplicate normalized required/ignored entries.
 - verifies duplicate normalized gitlink paths are surfaced and fail validation.
 - verifies empty/whitespace gitlink inputs are surfaced as explicit validator errors.

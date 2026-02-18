@@ -209,12 +209,18 @@ export function validateSubmoduleMap(
     .filter(({ normalizedPath }) => !normalizedPath)
     .map(({ rawPath }) => String(rawPath));
 
-  const normalizedRequiredPaths = [
-    ...new Set(normalizedRequiredCandidates.map(({ normalizedPath }) => normalizedPath).filter(Boolean))
-  ];
-  const normalizedIgnoredGitlinks = [
-    ...new Set(normalizedIgnoredCandidates.map(({ normalizedPath }) => normalizedPath).filter(Boolean))
-  ];
+  const requiredNormalizedValues = normalizedRequiredCandidates
+    .map(({ normalizedPath }) => normalizedPath)
+    .filter(Boolean);
+  const ignoredNormalizedValues = normalizedIgnoredCandidates
+    .map(({ normalizedPath }) => normalizedPath)
+    .filter(Boolean);
+
+  const duplicateRequiredPaths = [...new Set(requiredNormalizedValues.filter((p, i) => requiredNormalizedValues.indexOf(p) !== i))];
+  const duplicateIgnoredPaths = [...new Set(ignoredNormalizedValues.filter((p, i) => ignoredNormalizedValues.indexOf(p) !== i))];
+
+  const normalizedRequiredPaths = [...new Set(requiredNormalizedValues)];
+  const normalizedIgnoredGitlinks = [...new Set(ignoredNormalizedValues)];
 
   const gitlinkSet = new Set(resolvedGitlinks);
   const invalidIgnoredRequiredOverlap = normalizedRequiredPaths.filter((p) => normalizedIgnoredGitlinks.includes(p));
@@ -245,7 +251,9 @@ export function validateSubmoduleMap(
       invalidIgnoredRequiredOverlap.length === 0 &&
       invalidRequiredPaths.length === 0 &&
       invalidIgnoredPaths.length === 0 &&
-      invalidGitlinks.length === 0,
+      invalidGitlinks.length === 0 &&
+      duplicateRequiredPaths.length === 0 &&
+      duplicateIgnoredPaths.length === 0,
     missingRequired,
     missingGitlinksForRequired,
     unexpectedGitlinks,
@@ -254,6 +262,8 @@ export function validateSubmoduleMap(
     invalidRequiredPaths,
     invalidIgnoredPaths,
     invalidGitlinks,
+    duplicateRequiredPaths,
+    duplicateIgnoredPaths,
     duplicateGitlinks,
     duplicateMappings: [...duplicateMappings.entries()].map(([pathKey, owners]) => ({
       path: pathKey,
@@ -329,6 +339,16 @@ if (import.meta.url === `file://${process.argv[1]}`) {
   }
   if (result.invalidGitlinks.length) {
     console.error(`Invalid gitlink paths include empty values (${result.invalidGitlinks.join(', ')})`);
+  }
+  if (result.duplicateRequiredPaths.length) {
+    console.error(
+      `Invalid config: required paths include duplicates (${result.duplicateRequiredPaths.join(', ')})`
+    );
+  }
+  if (result.duplicateIgnoredPaths.length) {
+    console.error(
+      `Invalid config: ignored paths include duplicates (${result.duplicateIgnoredPaths.join(', ')})`
+    );
   }
   process.exit(1);
 }
