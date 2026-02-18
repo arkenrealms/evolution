@@ -61,7 +61,7 @@ export function parseGitmodules(gitmodulesContent) {
   const entries = new Map();
   const duplicateMappings = new Map();
   const ownerMappings = new Map();
-  const ownerPathConflicts = [];
+  const ownerPathConflicts = new Map();
   const invalidMappings = [];
   let current;
 
@@ -88,7 +88,9 @@ export function parseGitmodules(gitmodulesContent) {
 
     const priorPathForOwner = ownerMappings.get(current);
     if (priorPathForOwner && priorPathForOwner !== mappedPath) {
-      ownerPathConflicts.push({ owner: current, paths: [priorPathForOwner, mappedPath] });
+      const conflictPaths = ownerPathConflicts.get(current) ?? new Set([priorPathForOwner]);
+      conflictPaths.add(mappedPath);
+      ownerPathConflicts.set(current, conflictPaths);
       continue;
     }
     if (!priorPathForOwner) {
@@ -106,7 +108,15 @@ export function parseGitmodules(gitmodulesContent) {
     entries.set(mappedPath, current);
   }
 
-  return { entries, duplicateMappings, ownerPathConflicts, invalidMappings };
+  return {
+    entries,
+    duplicateMappings,
+    ownerPathConflicts: [...ownerPathConflicts.entries()].map(([owner, paths]) => ({
+      owner,
+      paths: [...paths]
+    })),
+    invalidMappings
+  };
 }
 
 export function listGitlinkPaths(repoRoot) {

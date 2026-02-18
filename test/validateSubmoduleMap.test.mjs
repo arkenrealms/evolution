@@ -110,6 +110,29 @@ test('parseGitmodules reports per-owner conflicting path mappings', () => {
   ]);
 });
 
+test('parseGitmodules aggregates repeated owner conflicts into one deterministic record', () => {
+  const fixture = `
+[submodule "packages/protocol"]
+  path = packages/protocol
+[submodule "packages/protocol"]
+  path = packages/protocol-v2
+[submodule "packages/protocol"]
+  path = packages/protocol-v3
+[submodule "packages/realm"]
+  path = packages/realm
+[submodule "packages/shard"]
+  path = packages/shard
+`.trim();
+
+  const parsed = parseGitmodules(fixture);
+  assert.deepEqual(parsed.ownerPathConflicts, [
+    {
+      owner: 'packages/protocol',
+      paths: ['packages/protocol', 'packages/protocol-v2', 'packages/protocol-v3']
+    }
+  ]);
+});
+
 test('parseGitmodules accepts inline comments on path lines', () => {
   const fixture = `
 [submodule "packages/protocol"]
