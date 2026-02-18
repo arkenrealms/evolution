@@ -3,4 +3,4 @@
 Wrapper-level tooling for `arken/packages/evolution`.
 
 ## Current utilities
-- `validateSubmoduleMap.mjs`: validates required non-client `.gitmodules` paths, verifies required mappings also exist as HEAD gitlinks, normalizes quoted/path-variant entries (quotes, `./`, trailing slash, backslashes), reports duplicate path mappings, flags unexpected unmapped gitlinks, and reports mapped paths that no longer resolve to `HEAD` gitlinks while allowing temporary `packages/client` skip policy.
+- `validateSubmoduleMap.mjs`: validates required non-client `.gitmodules` paths, verifies required mappings also exist as HEAD gitlinks, normalizes quoted/path-variant entries (quotes, `./`, trailing slash, backslashes), reports duplicate path mappings, flags unexpected unmapped gitlinks, reports mapped paths that no longer resolve to `HEAD` gitlinks while allowing temporary `packages/client` skip policy, and rejects invalid configs where a required path is also listed in `ignoredGitlinks`.

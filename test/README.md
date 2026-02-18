@@ -12,3 +12,4 @@ Minimal wrapper-level regression checks for `arken/packages/evolution`.
 - guards stale `.gitmodules` mappings that no longer resolve to `HEAD` gitlinks.
 - guards duplicate `.gitmodules` path mappings (fixture-level parser behavior + live-repo check).
 - verifies parser path normalization for quoted, prefixed (`./`), trailing-slash, and backslash-separated `path` values.
+- verifies validator configuration cannot ignore required submodule paths.

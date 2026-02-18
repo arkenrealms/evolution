@@ -12,6 +12,7 @@ Provides lightweight guardrails that can run without recursive submodule initial
 - Detect duplicate `.gitmodules` path mappings to prevent ambiguous ownership.
 - Detect stale `.gitmodules` mappings that are no longer present as `HEAD` gitlinks (`mappedWithoutGitlink`).
 - Allow explicit temporary skip for `packages/client`.
+- Guard against invalid validator configuration where `ignoredGitlinks` overlaps required paths.
 
 ## Follow-ups
 - Migrate wrapper tests from `node:test` to Jest + TypeScript when package-level Jest toolchain is introduced.

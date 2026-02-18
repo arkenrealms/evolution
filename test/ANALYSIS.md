@@ -10,6 +10,7 @@ Ensures wrapper-level submodule metadata stays internally consistent during temp
 - deterministic duplicate `.gitmodules` path-mapping detection.
 - deterministic path normalization across `.gitmodules` path variants.
 - explicit acknowledgement of temporary `packages/client` ignore policy.
+- explicit rejection of invalid overlap between required paths and ignored paths.
 
 ## Follow-ups
 - Keep incremental migration path open toward Jest + TS when wrapper package adopts Jest runtime dependencies.

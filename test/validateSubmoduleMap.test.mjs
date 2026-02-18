@@ -87,3 +87,23 @@ test('no duplicate path mappings are present in live .gitmodules', () => {
   const result = validateSubmoduleMap(repoRoot);
   assert.deepEqual(result.duplicateMappings, []);
 });
+
+test('required paths cannot be hidden by ignoredGitlinks', () => {
+  const fixture = `
+[submodule "packages/protocol"]
+  path = packages/protocol
+[submodule "packages/realm"]
+  path = packages/realm
+[submodule "packages/shard"]
+  path = packages/shard
+`.trim();
+
+  const result = validateSubmoduleMap(repoRoot, {
+    gitmodulesContent: fixture,
+    gitlinks: ['packages/protocol', 'packages/realm', 'packages/shard'],
+    ignoredGitlinks: ['packages/client', './packages/realm/']
+  });
+
+  assert.equal(result.ok, false);
+  assert.deepEqual(result.invalidIgnoredRequiredOverlap, ['packages/realm']);
+});

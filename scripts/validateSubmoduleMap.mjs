@@ -76,12 +76,19 @@ export function validateSubmoduleMap(
   const { entries: mapping, duplicateMappings } = parseGitmodules(resolvedGitmodulesContent);
   const resolvedGitlinks = gitlinks ?? listGitlinkPaths(repoRoot);
 
-  const missingRequired = requiredPaths.filter((p) => !mapping.has(p));
-  const missingGitlinksForRequired = requiredPaths.filter((p) => mapping.has(p) && !resolvedGitlinks.includes(p));
-  const unexpectedGitlinks = resolvedGitlinks.filter((p) => !mapping.has(p) && !ignoredGitlinks.includes(p));
+  const normalizedRequiredPaths = [...new Set(requiredPaths.map((p) => normalizeSubmodulePath(p)))];
+  const normalizedIgnoredGitlinks = [...new Set(ignoredGitlinks.map((p) => normalizeSubmodulePath(p)))];
+  const gitlinkSet = new Set(resolvedGitlinks);
+  const invalidIgnoredRequiredOverlap = normalizedRequiredPaths.filter((p) => normalizedIgnoredGitlinks.includes(p));
+
+  const missingRequired = normalizedRequiredPaths.filter((p) => !mapping.has(p));
+  const missingGitlinksForRequired = normalizedRequiredPaths.filter((p) => mapping.has(p) && !gitlinkSet.has(p));
+  const unexpectedGitlinks = resolvedGitlinks.filter(
+    (p) => !mapping.has(p) && !normalizedIgnoredGitlinks.includes(p)
+  );
   const mappedWithoutGitlink = [...mapping.keys()]
-    .filter((p) => !resolvedGitlinks.includes(p))
-    .filter((p) => !ignoredGitlinks.includes(p));
+    .filter((p) => !gitlinkSet.has(p))
+    .filter((p) => !normalizedIgnoredGitlinks.includes(p));
 
   return {
     ok:
@@ -89,18 +96,21 @@ export function validateSubmoduleMap(
       missingGitlinksForRequired.length === 0 &&
       unexpectedGitlinks.length === 0 &&
       mappedWithoutGitlink.length === 0 &&
-      duplicateMappings.size === 0,
+      duplicateMappings.size === 0 &&
+      invalidIgnoredRequiredOverlap.length === 0,
     missingRequired,
     missingGitlinksForRequired,
     unexpectedGitlinks,
     mappedWithoutGitlink,
+    invalidIgnoredRequiredOverlap,
     duplicateMappings: [...duplicateMappings.entries()].map(([pathKey, owners]) => ({
       path: pathKey,
       owners
     })),
     mappedPaths: [...mapping.keys()].sort(),
     gitlinks: [...resolvedGitlinks].sort(),
-    ignoredGitlinks
+    requiredPaths: normalizedRequiredPaths,
+    ignoredGitlinks: normalizedIgnoredGitlinks
   };
 }
 
@@ -129,6 +139,11 @@ if (import.meta.url === `file://${process.argv[1]}`) {
       .map(({ path: mappedPath, owners }) => `${mappedPath} => ${owners.join(' | ')}`)
       .join('; ');
     console.error(`Duplicate .gitmodules path mappings: ${duplicateSummary}`);
+  }
+  if (result.invalidIgnoredRequiredOverlap.length) {
+    console.error(
+      `Invalid config: required paths cannot also be ignored (${result.invalidIgnoredRequiredOverlap.join(', ')})`
+    );
   }
   process.exit(1);
 }
