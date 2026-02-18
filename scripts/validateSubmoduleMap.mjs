@@ -150,11 +150,18 @@ export function validateSubmoduleMap(
     resolvedGitmodulesContent
   );
   const resolvedGitlinks = (gitlinks ?? listGitlinkPaths(repoRoot)).map((p) => normalizeSubmodulePath(p));
+  const gitlinkOccurrences = new Map();
+  for (const gitlinkPath of resolvedGitlinks) {
+    gitlinkOccurrences.set(gitlinkPath, (gitlinkOccurrences.get(gitlinkPath) ?? 0) + 1);
+  }
 
   const normalizedRequiredPaths = [...new Set(requiredPaths.map((p) => normalizeSubmodulePath(p)))];
   const normalizedIgnoredGitlinks = [...new Set(ignoredGitlinks.map((p) => normalizeSubmodulePath(p)))];
   const gitlinkSet = new Set(resolvedGitlinks);
   const invalidIgnoredRequiredOverlap = normalizedRequiredPaths.filter((p) => normalizedIgnoredGitlinks.includes(p));
+  const duplicateGitlinks = [...gitlinkOccurrences.entries()]
+    .filter(([, count]) => count > 1)
+    .map(([gitlinkPath, count]) => ({ path: gitlinkPath, count }));
 
   const missingRequired = normalizedRequiredPaths.filter((p) => !mapping.has(p));
   const missingGitlinksForRequired = normalizedRequiredPaths.filter((p) => mapping.has(p) && !gitlinkSet.has(p));
@@ -174,12 +181,14 @@ export function validateSubmoduleMap(
       duplicateMappings.size === 0 &&
       ownerPathConflicts.length === 0 &&
       invalidMappings.length === 0 &&
+      duplicateGitlinks.length === 0 &&
       invalidIgnoredRequiredOverlap.length === 0,
     missingRequired,
     missingGitlinksForRequired,
     unexpectedGitlinks,
     mappedWithoutGitlink,
     invalidIgnoredRequiredOverlap,
+    duplicateGitlinks,
     duplicateMappings: [...duplicateMappings.entries()].map(([pathKey, owners]) => ({
       path: pathKey,
       owners
@@ -230,6 +239,12 @@ if (import.meta.url === `file://${process.argv[1]}`) {
       .map(({ owner, paths }) => `${owner} => ${paths.join(' <> ')}`)
       .join('; ');
     console.error(`Conflicting owner path mappings: ${ownerConflictSummary}`);
+  }
+  if (result.duplicateGitlinks.length) {
+    const duplicateGitlinkSummary = result.duplicateGitlinks
+      .map(({ path: gitlinkPath, count }) => `${gitlinkPath} (${count}x)`)
+      .join('; ');
+    console.error(`Duplicate normalized gitlinks in HEAD listing: ${duplicateGitlinkSummary}`);
   }
   if (result.invalidIgnoredRequiredOverlap.length) {
     console.error(

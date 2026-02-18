@@ -301,3 +301,27 @@ test('gitlink path variants are normalized before comparison', () => {
   assert.equal(result.ok, true);
   assert.deepEqual(result.missingGitlinksForRequired, []);
 });
+
+test('validateSubmoduleMap reports duplicate gitlinks after normalization', () => {
+  const fixture = `
+[submodule "packages/protocol"]
+  path = packages/protocol
+[submodule "packages/realm"]
+  path = packages/realm
+[submodule "packages/shard"]
+  path = packages/shard
+`.trim();
+
+  const result = validateSubmoduleMap(repoRoot, {
+    gitmodulesContent: fixture,
+    gitlinks: ['packages/protocol', './packages/protocol/', 'packages/realm', 'packages/shard']
+  });
+
+  assert.equal(result.ok, false);
+  assert.deepEqual(result.duplicateGitlinks, [{ path: 'packages/protocol', count: 2 }]);
+});
+
+test('live repo has no duplicate normalized gitlinks', () => {
+  const result = validateSubmoduleMap(repoRoot);
+  assert.deepEqual(result.duplicateGitlinks, []);
+});
