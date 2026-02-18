@@ -68,6 +68,24 @@ test('parseGitmodules reports duplicate path mappings deterministically', () => 
     'packages/protocol',
     'packages/protocol-mirror'
   ]);
+  assert.deepEqual(parsed.ownerPathConflicts, []);
+});
+
+test('parseGitmodules reports per-owner conflicting path mappings', () => {
+  const fixture = `
+[submodule "packages/protocol"]
+  path = packages/protocol
+[submodule "packages/protocol"]
+  path = packages/protocol-v2
+`.trim();
+
+  const parsed = parseGitmodules(fixture);
+  assert.deepEqual(parsed.ownerPathConflicts, [
+    {
+      owner: 'packages/protocol',
+      paths: ['packages/protocol', 'packages/protocol-v2']
+    }
+  ]);
 });
 
 test('parseGitmodules accepts inline comments on path lines', () => {
@@ -179,6 +197,32 @@ test('required paths cannot be hidden by ignoredGitlinks', () => {
 
   assert.equal(result.ok, false);
   assert.deepEqual(result.invalidIgnoredRequiredOverlap, ['packages/realm']);
+});
+
+test('validateSubmoduleMap fails when same owner maps to conflicting paths', () => {
+  const fixture = `
+[submodule "packages/protocol"]
+  path = packages/protocol
+[submodule "packages/protocol"]
+  path = packages/protocol-v2
+[submodule "packages/realm"]
+  path = packages/realm
+[submodule "packages/shard"]
+  path = packages/shard
+`.trim();
+
+  const result = validateSubmoduleMap(repoRoot, {
+    gitmodulesContent: fixture,
+    gitlinks: ['packages/protocol', 'packages/protocol-v2', 'packages/realm', 'packages/shard']
+  });
+
+  assert.equal(result.ok, false);
+  assert.deepEqual(result.ownerPathConflicts, [
+    {
+      owner: 'packages/protocol',
+      paths: ['packages/protocol', 'packages/protocol-v2']
+    }
+  ]);
 });
 
 test('gitlink path variants are normalized before comparison', () => {

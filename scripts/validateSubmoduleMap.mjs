@@ -58,6 +58,8 @@ export function parseGitmodules(gitmodulesContent) {
   const lines = gitmodulesContent.split(/\r?\n/);
   const entries = new Map();
   const duplicateMappings = new Map();
+  const ownerMappings = new Map();
+  const ownerPathConflicts = [];
   const invalidMappings = [];
   let current;
 
@@ -82,6 +84,15 @@ export function parseGitmodules(gitmodulesContent) {
       continue;
     }
 
+    const priorPathForOwner = ownerMappings.get(current);
+    if (priorPathForOwner && priorPathForOwner !== mappedPath) {
+      ownerPathConflicts.push({ owner: current, paths: [priorPathForOwner, mappedPath] });
+      continue;
+    }
+    if (!priorPathForOwner) {
+      ownerMappings.set(current, mappedPath);
+    }
+
     if (entries.has(mappedPath)) {
       const prior = entries.get(mappedPath);
       const dupes = duplicateMappings.get(mappedPath) ?? [prior];
@@ -93,7 +104,7 @@ export function parseGitmodules(gitmodulesContent) {
     entries.set(mappedPath, current);
   }
 
-  return { entries, duplicateMappings, invalidMappings };
+  return { entries, duplicateMappings, ownerPathConflicts, invalidMappings };
 }
 
 export function listGitlinkPaths(repoRoot) {
@@ -122,7 +133,9 @@ export function validateSubmoduleMap(
 ) {
   const gitmodulesPath = path.join(repoRoot, '.gitmodules');
   const resolvedGitmodulesContent = gitmodulesContent ?? fs.readFileSync(gitmodulesPath, 'utf8');
-  const { entries: mapping, duplicateMappings, invalidMappings } = parseGitmodules(resolvedGitmodulesContent);
+  const { entries: mapping, duplicateMappings, ownerPathConflicts, invalidMappings } = parseGitmodules(
+    resolvedGitmodulesContent
+  );
   const resolvedGitlinks = (gitlinks ?? listGitlinkPaths(repoRoot)).map((p) => normalizeSubmodulePath(p));
 
   const normalizedRequiredPaths = [...new Set(requiredPaths.map((p) => normalizeSubmodulePath(p)))];
@@ -146,6 +159,7 @@ export function validateSubmoduleMap(
       unexpectedGitlinks.length === 0 &&
       mappedWithoutGitlink.length === 0 &&
       duplicateMappings.size === 0 &&
+      ownerPathConflicts.length === 0 &&
       invalidMappings.length === 0 &&
       invalidIgnoredRequiredOverlap.length === 0,
     missingRequired,
@@ -157,6 +171,7 @@ export function validateSubmoduleMap(
       path: pathKey,
       owners
     })),
+    ownerPathConflicts,
     invalidMappings,
     mappedPaths: [...mapping.keys()].sort(),
     gitlinks: [...resolvedGitlinks].sort(),
@@ -196,6 +211,12 @@ if (import.meta.url === `file://${process.argv[1]}`) {
       .map(({ owner, rawPath }) => `${owner} => ${String(rawPath).trim() || '<empty>'}`)
       .join('; ');
     console.error(`Invalid empty .gitmodules path mappings: ${invalidSummary}`);
+  }
+  if (result.ownerPathConflicts.length) {
+    const ownerConflictSummary = result.ownerPathConflicts
+      .map(({ owner, paths }) => `${owner} => ${paths.join(' <> ')}`)
+      .join('; ');
+    console.error(`Conflicting owner path mappings: ${ownerConflictSummary}`);
   }
   if (result.invalidIgnoredRequiredOverlap.length) {
     console.error(
