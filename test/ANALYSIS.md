@@ -18,6 +18,7 @@ Ensures wrapper-level submodule metadata stays internally consistent during temp
 - deterministic handling for UTF-8 BOM-prefixed `.gitmodules` fixtures so first section parsing remains stable.
 - explicit acknowledgement of temporary `packages/client` ignore policy.
 - explicit rejection of invalid overlap between required paths and ignored paths.
+- explicit rejection of empty/whitespace-only required/ignored validator config paths.
 - deterministic detection of duplicate normalized gitlink paths when variant raw inputs collapse to the same canonical path.
 
 ## Follow-ups

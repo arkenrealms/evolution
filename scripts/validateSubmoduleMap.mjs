@@ -172,8 +172,29 @@ export function validateSubmoduleMap(
     gitlinkOccurrences.set(gitlinkPath, (gitlinkOccurrences.get(gitlinkPath) ?? 0) + 1);
   }
 
-  const normalizedRequiredPaths = [...new Set(requiredPaths.map((p) => normalizeSubmodulePath(p)))];
-  const normalizedIgnoredGitlinks = [...new Set(ignoredGitlinks.map((p) => normalizeSubmodulePath(p)))];
+  const normalizedRequiredCandidates = requiredPaths.map((rawPath) => ({
+    rawPath,
+    normalizedPath: normalizeSubmodulePath(rawPath)
+  }));
+  const normalizedIgnoredCandidates = ignoredGitlinks.map((rawPath) => ({
+    rawPath,
+    normalizedPath: normalizeSubmodulePath(rawPath)
+  }));
+
+  const invalidRequiredPaths = normalizedRequiredCandidates
+    .filter(({ normalizedPath }) => !normalizedPath)
+    .map(({ rawPath }) => String(rawPath));
+  const invalidIgnoredPaths = normalizedIgnoredCandidates
+    .filter(({ normalizedPath }) => !normalizedPath)
+    .map(({ rawPath }) => String(rawPath));
+
+  const normalizedRequiredPaths = [
+    ...new Set(normalizedRequiredCandidates.map(({ normalizedPath }) => normalizedPath).filter(Boolean))
+  ];
+  const normalizedIgnoredGitlinks = [
+    ...new Set(normalizedIgnoredCandidates.map(({ normalizedPath }) => normalizedPath).filter(Boolean))
+  ];
+
   const gitlinkSet = new Set(resolvedGitlinks);
   const invalidIgnoredRequiredOverlap = normalizedRequiredPaths.filter((p) => normalizedIgnoredGitlinks.includes(p));
   const duplicateGitlinks = [...gitlinkOccurrences.entries()]
@@ -200,12 +221,16 @@ export function validateSubmoduleMap(
       missingPathOwners.length === 0 &&
       invalidMappings.length === 0 &&
       duplicateGitlinks.length === 0 &&
-      invalidIgnoredRequiredOverlap.length === 0,
+      invalidIgnoredRequiredOverlap.length === 0 &&
+      invalidRequiredPaths.length === 0 &&
+      invalidIgnoredPaths.length === 0,
     missingRequired,
     missingGitlinksForRequired,
     unexpectedGitlinks,
     mappedWithoutGitlink,
     invalidIgnoredRequiredOverlap,
+    invalidRequiredPaths,
+    invalidIgnoredPaths,
     duplicateGitlinks,
     duplicateMappings: [...duplicateMappings.entries()].map(([pathKey, owners]) => ({
       path: pathKey,
@@ -272,6 +297,12 @@ if (import.meta.url === `file://${process.argv[1]}`) {
     console.error(
       `Invalid config: required paths cannot also be ignored (${result.invalidIgnoredRequiredOverlap.join(', ')})`
     );
+  }
+  if (result.invalidRequiredPaths.length) {
+    console.error(`Invalid config: required paths include empty values (${result.invalidRequiredPaths.join(', ')})`);
+  }
+  if (result.invalidIgnoredPaths.length) {
+    console.error(`Invalid config: ignored paths include empty values (${result.invalidIgnoredPaths.join(', ')})`);
   }
   process.exit(1);
 }

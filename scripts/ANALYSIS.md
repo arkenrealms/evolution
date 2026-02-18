@@ -21,6 +21,7 @@ Provides lightweight guardrails that can run without recursive submodule initial
 - Detect duplicate normalized gitlink paths in `HEAD` listing (`duplicateGitlinks`) to catch parser/input regressions that collapse distinct raw paths into the same canonical key.
 - Allow explicit temporary skip for `packages/client`.
 - Guard against invalid validator configuration where `ignoredGitlinks` overlaps required paths.
+- Guard against invalid validator configuration where `requiredPaths` or `ignoredGitlinks` contains empty/whitespace-only entries (surfaces as explicit config errors instead of silently normalizing to empty paths).
 
 ## Follow-ups
 - Migrate wrapper tests from `node:test` to Jest + TypeScript when package-level Jest toolchain is introduced.

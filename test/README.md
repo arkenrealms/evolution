@@ -18,4 +18,5 @@ Minimal wrapper-level regression checks for `arken/packages/evolution`.
 - verifies BOM-prefixed `.gitmodules` fixtures parse the first section reliably (no dropped initial mapping).
 - verifies injected gitlink path variants are normalized before required-path comparison.
 - verifies validator configuration cannot ignore required submodule paths.
+- verifies validator configuration rejects empty/whitespace-only required or ignored path entries.
 - verifies duplicate normalized gitlink paths are surfaced and fail validation.
