@@ -100,13 +100,16 @@ test('parseGitmodules reports invalid empty path mappings', () => {
   path = # intentionally blank
 [submodule "packages/shard"]
   path = ; intentionally blank
+[submodule "packages/empty"]
+  path =
 `.trim();
 
   const parsed = parseGitmodules(fixture);
   assert.equal(parsed.entries.get('packages/protocol'), 'packages/protocol');
   assert.deepEqual(parsed.invalidMappings, [
     { owner: 'packages/realm', rawPath: '# intentionally blank' },
-    { owner: 'packages/shard', rawPath: '; intentionally blank' }
+    { owner: 'packages/shard', rawPath: '; intentionally blank' },
+    { owner: 'packages/empty', rawPath: '' }
   ]);
 });
 

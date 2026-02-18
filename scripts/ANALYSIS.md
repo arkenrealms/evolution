@@ -12,7 +12,7 @@ Provides lightweight guardrails that can run without recursive submodule initial
 - Enforce required non-client mappings (`protocol`, `realm`, `shard`).
 - Assert required mappings are also present as gitlinks in `HEAD`.
 - Detect duplicate `.gitmodules` path mappings to prevent ambiguous ownership.
-- Reject invalid empty/comment-only `.gitmodules` `path = ...` mappings before they can silently collapse to root-equivalent keys.
+- Reject invalid empty/comment-only `.gitmodules` `path = ...` mappings before they can silently collapse to root-equivalent keys (including explicit blank `path =` assignments).
 - Detect stale `.gitmodules` mappings that are no longer present as `HEAD` gitlinks (`mappedWithoutGitlink`).
 - Allow explicit temporary skip for `packages/client`.
 - Guard against invalid validator configuration where `ignoredGitlinks` overlaps required paths.
