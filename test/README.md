@@ -9,5 +9,6 @@ Minimal wrapper-level regression checks for `arken/packages/evolution`.
 - validates non-client `.gitmodules` mapping requirements.
 - validates required mappings are backed by actual `HEAD` gitlinks.
 - guards against newly introduced unmapped gitlinks (except explicit temporary client skip).
+- guards stale `.gitmodules` mappings that no longer resolve to `HEAD` gitlinks.
 - guards duplicate `.gitmodules` path mappings (fixture-level parser behavior + live-repo check).
 - verifies parser normalization for quoted `.gitmodules` `path` values.

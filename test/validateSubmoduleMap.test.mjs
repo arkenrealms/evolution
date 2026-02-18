@@ -47,6 +47,32 @@ test('parseGitmodules reports duplicate path mappings deterministically', () => 
   ]);
 });
 
+test('validateSubmoduleMap reports mapped paths that no longer have gitlinks', () => {
+  const fixture = `
+[submodule "packages/protocol"]
+  path = packages/protocol
+[submodule "packages/realm"]
+  path = packages/realm
+[submodule "packages/shard"]
+  path = packages/shard
+[submodule "packages/legacy"]
+  path = packages/legacy
+`.trim();
+
+  const result = validateSubmoduleMap(repoRoot, {
+    gitmodulesContent: fixture,
+    gitlinks: ['packages/protocol', 'packages/realm', 'packages/shard']
+  });
+
+  assert.deepEqual(result.mappedWithoutGitlink, ['packages/legacy']);
+  assert.equal(result.ok, false);
+});
+
+test('no mapped-without-gitlink paths are present in live .gitmodules', () => {
+  const result = validateSubmoduleMap(repoRoot);
+  assert.deepEqual(result.mappedWithoutGitlink, []);
+});
+
 test('no duplicate path mappings are present in live .gitmodules', () => {
   const result = validateSubmoduleMap(repoRoot);
   assert.deepEqual(result.duplicateMappings, []);

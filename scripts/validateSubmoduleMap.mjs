@@ -58,33 +58,40 @@ export function validateSubmoduleMap(
   repoRoot,
   {
     requiredPaths = ['packages/protocol', 'packages/realm', 'packages/shard'],
-    ignoredGitlinks = ['packages/client']
+    ignoredGitlinks = ['packages/client'],
+    gitmodulesContent,
+    gitlinks
   } = {}
 ) {
   const gitmodulesPath = path.join(repoRoot, '.gitmodules');
-  const gitmodulesContent = fs.readFileSync(gitmodulesPath, 'utf8');
-  const { entries: mapping, duplicateMappings } = parseGitmodules(gitmodulesContent);
-  const gitlinks = listGitlinkPaths(repoRoot);
+  const resolvedGitmodulesContent = gitmodulesContent ?? fs.readFileSync(gitmodulesPath, 'utf8');
+  const { entries: mapping, duplicateMappings } = parseGitmodules(resolvedGitmodulesContent);
+  const resolvedGitlinks = gitlinks ?? listGitlinkPaths(repoRoot);
 
   const missingRequired = requiredPaths.filter((p) => !mapping.has(p));
-  const missingGitlinksForRequired = requiredPaths.filter((p) => mapping.has(p) && !gitlinks.includes(p));
-  const unexpectedGitlinks = gitlinks.filter((p) => !mapping.has(p) && !ignoredGitlinks.includes(p));
+  const missingGitlinksForRequired = requiredPaths.filter((p) => mapping.has(p) && !resolvedGitlinks.includes(p));
+  const unexpectedGitlinks = resolvedGitlinks.filter((p) => !mapping.has(p) && !ignoredGitlinks.includes(p));
+  const mappedWithoutGitlink = [...mapping.keys()]
+    .filter((p) => !resolvedGitlinks.includes(p))
+    .filter((p) => !ignoredGitlinks.includes(p));
 
   return {
     ok:
       missingRequired.length === 0 &&
       missingGitlinksForRequired.length === 0 &&
       unexpectedGitlinks.length === 0 &&
+      mappedWithoutGitlink.length === 0 &&
       duplicateMappings.size === 0,
     missingRequired,
     missingGitlinksForRequired,
     unexpectedGitlinks,
+    mappedWithoutGitlink,
     duplicateMappings: [...duplicateMappings.entries()].map(([pathKey, owners]) => ({
       path: pathKey,
       owners
     })),
     mappedPaths: [...mapping.keys()].sort(),
-    gitlinks: [...gitlinks].sort(),
+    gitlinks: [...resolvedGitlinks].sort(),
     ignoredGitlinks
   };
 }
@@ -105,6 +112,9 @@ if (import.meta.url === `file://${process.argv[1]}`) {
   }
   if (result.unexpectedGitlinks.length) {
     console.error(`Unexpected unmapped gitlinks: ${result.unexpectedGitlinks.join(', ')}`);
+  }
+  if (result.mappedWithoutGitlink.length) {
+    console.error(`Mapped paths without gitlinks in HEAD: ${result.mappedWithoutGitlink.join(', ')}`);
   }
   if (result.duplicateMappings.length) {
     const duplicateSummary = result.duplicateMappings
