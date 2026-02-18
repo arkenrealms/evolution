@@ -4,10 +4,19 @@ import fs from 'node:fs';
 import path from 'node:path';
 
 export function normalizeSubmodulePath(value) {
-  let normalized = String(value ?? '')
-    .trim()
-    .replace(/^"(.+)"$/, '$1')
-    .replace(/\\/g, '/');
+  let normalized = String(value ?? '').trim();
+  const isQuoted = /^".*"$/.test(normalized);
+
+  if (!isQuoted) {
+    if (normalized.includes('#')) {
+      normalized = normalized.split('#')[0].trim();
+    }
+    if (normalized.includes(';')) {
+      normalized = normalized.split(';')[0].trim();
+    }
+  }
+
+  normalized = normalized.replace(/^"(.+)"$/, '$1').replace(/\\/g, '/');
 
   while (normalized.startsWith('./')) {
     normalized = normalized.slice(2);

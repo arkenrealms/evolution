@@ -41,6 +41,9 @@ test('normalizeSubmodulePath strips wrappers and slash variants', () => {
   assert.equal(normalizeSubmodulePath('././packages/realm//'), 'packages/realm');
   assert.equal(normalizeSubmodulePath('packages\\\\shard'), 'packages/shard');
   assert.equal(normalizeSubmodulePath('packages//shard///'), 'packages/shard');
+  assert.equal(normalizeSubmodulePath('packages/protocol # prod mapping'), 'packages/protocol');
+  assert.equal(normalizeSubmodulePath('packages/realm ; mirrored path'), 'packages/realm');
+  assert.equal(normalizeSubmodulePath('"packages/shard-beta"'), 'packages/shard-beta');
 });
 
 test('parseGitmodules reports duplicate path mappings deterministically', () => {
@@ -57,6 +60,22 @@ test('parseGitmodules reports duplicate path mappings deterministically', () => 
     'packages/protocol',
     'packages/protocol-mirror'
   ]);
+});
+
+test('parseGitmodules accepts inline comments on path lines', () => {
+  const fixture = `
+[submodule "packages/protocol"]
+  path = packages/protocol # stable
+[submodule "packages/realm"]
+  path = packages/realm ; canary
+[submodule "packages/shard"]
+  path = "packages/shard-beta"
+`.trim();
+
+  const parsed = parseGitmodules(fixture);
+  assert.equal(parsed.entries.get('packages/protocol'), 'packages/protocol');
+  assert.equal(parsed.entries.get('packages/realm'), 'packages/realm');
+  assert.equal(parsed.entries.get('packages/shard-beta'), 'packages/shard');
 });
 
 test('validateSubmoduleMap reports mapped paths that no longer have gitlinks', () => {

@@ -6,6 +6,7 @@ Provides lightweight guardrails that can run without recursive submodule initial
 ## Current scope
 - Parse `.gitmodules` path stanzas (including quoted `path = "..."` variants).
 - Normalize path variants (repeated `./`, duplicate `/`, trailing slash, backslash separators) for deterministic matching.
+- Ignore inline path comments (`#`, `;`) on unquoted `.gitmodules` `path = ...` entries so annotated mappings still validate predictably.
 - Compare against `git ls-tree HEAD packages` gitlinks.
 - Enforce required non-client mappings (`protocol`, `realm`, `shard`).
 - Assert required mappings are also present as gitlinks in `HEAD`.
