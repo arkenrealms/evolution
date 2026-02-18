@@ -47,6 +47,8 @@ test('normalizeSubmodulePath strips wrappers and slash variants', () => {
   assert.equal(normalizeSubmodulePath("'packages/sigil-protocol'"), 'packages/sigil-protocol');
   assert.equal(normalizeSubmodulePath('"packages/proto#col" # note'), 'packages/proto#col');
   assert.equal(normalizeSubmodulePath("'packages/rea;lm' ; note"), 'packages/rea;lm');
+  assert.equal(normalizeSubmodulePath('packages/proto\\#col # note'), 'packages/proto#col');
+  assert.equal(normalizeSubmodulePath('packages/rea\\;lm ; note'), 'packages/rea;lm');
 });
 
 test('parseGitmodules reports duplicate path mappings deterministically', () => {
@@ -75,6 +77,10 @@ test('parseGitmodules accepts inline comments on path lines', () => {
   path = "packages/shard-beta#v2" # qa branch
 [submodule "packages/sigil-protocol"]
   path = 'packages/sigil;protocol' ; integration
+[submodule "packages/escaped"]
+  path = packages/proto\\#col # escaped comment marker
+[submodule "packages/escaped-semicolon"]
+  path = packages/rea\\;lm ; escaped comment marker
 `.trim();
 
   const parsed = parseGitmodules(fixture);
@@ -82,6 +88,8 @@ test('parseGitmodules accepts inline comments on path lines', () => {
   assert.equal(parsed.entries.get('packages/realm'), 'packages/realm');
   assert.equal(parsed.entries.get('packages/shard-beta#v2'), 'packages/shard');
   assert.equal(parsed.entries.get('packages/sigil;protocol'), 'packages/sigil-protocol');
+  assert.equal(parsed.entries.get('packages/proto#col'), 'packages/escaped');
+  assert.equal(parsed.entries.get('packages/rea;lm'), 'packages/escaped-semicolon');
 });
 
 test('parseGitmodules reports invalid empty path mappings', () => {

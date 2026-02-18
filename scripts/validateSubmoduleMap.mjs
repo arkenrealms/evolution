@@ -5,11 +5,22 @@ import path from 'node:path';
 
 function stripInlineComment(rawValue) {
   let quote = null;
+  let escaped = false;
 
   for (let i = 0; i < rawValue.length; i += 1) {
     const ch = rawValue[i];
 
-    if ((ch === '"' || ch === "'") && rawValue[i - 1] !== '\\') {
+    if (escaped) {
+      escaped = false;
+      continue;
+    }
+
+    if (ch === '\\') {
+      escaped = true;
+      continue;
+    }
+
+    if (ch === '"' || ch === "'") {
       if (!quote) {
         quote = ch;
       } else if (quote === ch) {
@@ -28,7 +39,11 @@ function stripInlineComment(rawValue) {
 
 export function normalizeSubmodulePath(value) {
   let normalized = stripInlineComment(String(value ?? '').trim());
-  normalized = normalized.replace(/^"(.+)"$/, '$1').replace(/^'(.+)'$/, '$1').replace(/\\/g, '/');
+  normalized = normalized
+    .replace(/^"(.+)"$/, '$1')
+    .replace(/^'(.+)'$/, '$1')
+    .replace(/\\([#;])/g, '$1')
+    .replace(/\\/g, '/');
 
   while (normalized.startsWith('./')) {
     normalized = normalized.slice(2);
