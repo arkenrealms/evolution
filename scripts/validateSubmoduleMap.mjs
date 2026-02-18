@@ -77,7 +77,7 @@ export function parseGitmodules(gitmodulesContent) {
 
     if (!current) continue;
 
-    const match = line.match(/^path\s*=\s*(.*)$/);
+    const match = line.match(/^path\s*=\s*(.*)$/i);
     if (!match) continue;
 
     const mappedPath = normalizeSubmodulePath(match[1]);

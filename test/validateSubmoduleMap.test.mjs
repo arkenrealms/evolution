@@ -60,6 +60,22 @@ test('parseGitmodules handles UTF-8 BOM-prefixed .gitmodules content', () => {
   assert.equal(parsed.entries.get('packages/protocol'), 'packages/protocol');
 });
 
+test('parseGitmodules accepts case-insensitive path keys', () => {
+  const fixture = `
+[submodule "packages/protocol"]
+  Path = packages/protocol
+[submodule "packages/realm"]
+  PATH = packages/realm
+[submodule "packages/shard"]
+  pAtH = packages/shard
+`.trim();
+
+  const parsed = parseGitmodules(fixture);
+  assert.equal(parsed.entries.get('packages/protocol'), 'packages/protocol');
+  assert.equal(parsed.entries.get('packages/realm'), 'packages/realm');
+  assert.equal(parsed.entries.get('packages/shard'), 'packages/shard');
+});
+
 test('parseGitmodules reports duplicate path mappings deterministically', () => {
   const fixture = `
 [submodule "packages/protocol"]
