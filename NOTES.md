@@ -110,3 +110,14 @@ This repository is currently a submodule container. Core code lives in nested su
 4. Ensure `.gitmodules` entries exist for every nested submodule path (including `packages/client/*`).
 5. Add CI check that verifies submodules initialize cleanly.
 6. Once nested repos are accessible, run protocol + test coverage review and add folder `README.md` / `NOTES.md` in protocol/test directories.
+
+### Re-verification (2026-02-17 7:44 PM PST)
+- Skip policy honored: no recursive submodule sync/update executed.
+- Added wrapper guardrail improvements in `scripts/validateSubmoduleMap.mjs`:
+  - detects duplicate `.gitmodules` path mappings,
+  - verifies required non-client mappings also exist as `HEAD` gitlinks.
+- Observed current `git ls-tree -r --full-tree HEAD packages` state:
+  - gitlinks present for `packages/protocol`, `packages/realm`, `packages/shard`.
+  - `packages/client` is **not** currently a `HEAD` gitlink in this checkout (path exists locally as nested working tree only).
+- Test command:
+  - `npm test` (pass: 6/6)

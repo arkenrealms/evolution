@@ -1,0 +1,11 @@
+{
+  "name": "@arken/evolution-wrapper",
+  "private": true,
+  "version": "0.0.0",
+  "description": "Wrapper-level validation utilities for Arken Evolution submodule layout.",
+  "type": "module",
+  "scripts": {
+    "test": "node --test test/validateSubmoduleMap.test.mjs",
+    "validate:submodules": "node scripts/validateSubmoduleMap.mjs"
+  }
+}

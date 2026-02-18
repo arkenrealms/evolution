@@ -17,5 +17,6 @@
   - ignore `evolution-unity` integration work,
   - do **not** run `git submodule sync/update --recursive` while skip remains active.
 - Continue non-client analysis/docs chunks in this wrapper repo (`README.md`, `ANALYSIS.md`, `NOTES.md`, `.gitmodules` profile) and defer nested-source passes until skip is lifted.
-- Keep documenting gitlink/submodule metadata drift for `packages/client` without executing recursive init commands.
+- Keep documenting client path-state drift (currently present as local nested working tree, not a `HEAD` gitlink in this checkout) without executing recursive init commands.
 - Continue direct `.gitmodules` source checks for non-client submodule stanzas (`protocol`, `realm`, `shard`) while the skip policy is active.
+- Maintain wrapper-level test guardrails via `npm test` (`validateSubmoduleMap`) before and after metadata/script changes.

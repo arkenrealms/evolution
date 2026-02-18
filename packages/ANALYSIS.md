@@ -13,7 +13,7 @@
 ## Risks
 - Cross-package protocol/state compatibility cannot be validated without nested checkouts.
 - Integration regressions may be missed until submodule sync occurs.
-- `packages/client` gitlink is present in HEAD (`96bdcf55698334d77cc36f4c9c23e676a3106995`) but missing from `.gitmodules`, so recursive init is currently impossible.
+- `packages/client` is currently not present as a `HEAD` gitlink in this checkout (while still existing locally as a nested path), so wrapper metadata checks now focus on non-client required mappings plus explicit client ignore policy.
 
 ## Next test/protocol checks
 - Temporary skip active: do not analyze `packages/client` or run recursive submodule sync/update while this policy is in force.
