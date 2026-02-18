@@ -18,4 +18,5 @@
 ## Next test/protocol checks
 - Temporary skip active: do not analyze `packages/client` or run recursive submodule sync/update while this policy is in force.
 - Continue wrapper-level analysis/docs for non-client scope (`protocol`, `realm`, `shard` gitlink metadata and ownership notes).
+- Latest source read confirms `.gitmodules` contains only non-client stanzas (`packages/protocol`, `packages/realm`, `packages/shard`), so non-client documentation work can proceed without recursive init.
 - When skip is lifted, repair `.gitmodules` mapping for `packages/client` and only then resume recursive init + child-package lint/typecheck/tests.

@@ -93,6 +93,14 @@ This repository is currently a submodule container. Core code lives in nested su
 - Result unchanged:
   - `fatal: No url found for submodule path 'packages/client' in .gitmodules`
 
+### Non-client metadata check (2026-02-17 5:12 PM PST)
+- Skip policy honored: no recursive submodule sync/update commands executed.
+- Directly re-read `.gitmodules`; still only includes:
+  - `packages/protocol`
+  - `packages/realm`
+  - `packages/shard`
+- `packages/client` remains intentionally out-of-scope under temporary skip policy.
+
 ### Recommended follow-ups
 1. Honor temporary skip policy until revoked:
    - ignore `packages/client` and `evolution-unity` integration work,
