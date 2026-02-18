@@ -82,6 +82,24 @@ test('parseGitmodules accepts inline comments on path lines', () => {
   assert.equal(parsed.entries.get('packages/sigil-protocol'), 'packages/sigil-protocol');
 });
 
+test('parseGitmodules reports invalid empty path mappings', () => {
+  const fixture = `
+[submodule "packages/protocol"]
+  path = packages/protocol
+[submodule "packages/realm"]
+  path = # intentionally blank
+[submodule "packages/shard"]
+  path = ; intentionally blank
+`.trim();
+
+  const parsed = parseGitmodules(fixture);
+  assert.equal(parsed.entries.get('packages/protocol'), 'packages/protocol');
+  assert.deepEqual(parsed.invalidMappings, [
+    { owner: 'packages/realm', rawPath: '# intentionally blank' },
+    { owner: 'packages/shard', rawPath: '; intentionally blank' }
+  ]);
+});
+
 test('validateSubmoduleMap reports mapped paths that no longer have gitlinks', () => {
   const fixture = `
 [submodule "packages/protocol"]
@@ -111,6 +129,11 @@ test('no mapped-without-gitlink paths are present in live .gitmodules', () => {
 test('no duplicate path mappings are present in live .gitmodules', () => {
   const result = validateSubmoduleMap(repoRoot);
   assert.deepEqual(result.duplicateMappings, []);
+});
+
+test('no invalid empty path mappings are present in live .gitmodules', () => {
+  const result = validateSubmoduleMap(repoRoot);
+  assert.deepEqual(result.invalidMappings, []);
 });
 
 test('required paths cannot be hidden by ignoredGitlinks', () => {

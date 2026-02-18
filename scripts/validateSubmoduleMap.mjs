@@ -30,6 +30,7 @@ export function parseGitmodules(gitmodulesContent) {
   const lines = gitmodulesContent.split(/\r?\n/);
   const entries = new Map();
   const duplicateMappings = new Map();
+  const invalidMappings = [];
   let current;
 
   for (const rawLine of lines) {
@@ -48,6 +49,11 @@ export function parseGitmodules(gitmodulesContent) {
     if (!match) continue;
 
     const mappedPath = normalizeSubmodulePath(match[1]);
+    if (!mappedPath) {
+      invalidMappings.push({ owner: current, rawPath: match[1] });
+      continue;
+    }
+
     if (entries.has(mappedPath)) {
       const prior = entries.get(mappedPath);
       const dupes = duplicateMappings.get(mappedPath) ?? [prior];
@@ -59,7 +65,7 @@ export function parseGitmodules(gitmodulesContent) {
     entries.set(mappedPath, current);
   }
 
-  return { entries, duplicateMappings };
+  return { entries, duplicateMappings, invalidMappings };
 }
 
 export function listGitlinkPaths(repoRoot) {
@@ -88,7 +94,7 @@ export function validateSubmoduleMap(
 ) {
   const gitmodulesPath = path.join(repoRoot, '.gitmodules');
   const resolvedGitmodulesContent = gitmodulesContent ?? fs.readFileSync(gitmodulesPath, 'utf8');
-  const { entries: mapping, duplicateMappings } = parseGitmodules(resolvedGitmodulesContent);
+  const { entries: mapping, duplicateMappings, invalidMappings } = parseGitmodules(resolvedGitmodulesContent);
   const resolvedGitlinks = (gitlinks ?? listGitlinkPaths(repoRoot)).map((p) => normalizeSubmodulePath(p));
 
   const normalizedRequiredPaths = [...new Set(requiredPaths.map((p) => normalizeSubmodulePath(p)))];
@@ -112,6 +118,7 @@ export function validateSubmoduleMap(
       unexpectedGitlinks.length === 0 &&
       mappedWithoutGitlink.length === 0 &&
       duplicateMappings.size === 0 &&
+      invalidMappings.length === 0 &&
       invalidIgnoredRequiredOverlap.length === 0,
     missingRequired,
     missingGitlinksForRequired,
@@ -122,6 +129,7 @@ export function validateSubmoduleMap(
       path: pathKey,
       owners
     })),
+    invalidMappings,
     mappedPaths: [...mapping.keys()].sort(),
     gitlinks: [...resolvedGitlinks].sort(),
     requiredPaths: normalizedRequiredPaths,
@@ -154,6 +162,12 @@ if (import.meta.url === `file://${process.argv[1]}`) {
       .map(({ path: mappedPath, owners }) => `${mappedPath} => ${owners.join(' | ')}`)
       .join('; ');
     console.error(`Duplicate .gitmodules path mappings: ${duplicateSummary}`);
+  }
+  if (result.invalidMappings.length) {
+    const invalidSummary = result.invalidMappings
+      .map(({ owner, rawPath }) => `${owner} => ${String(rawPath).trim() || '<empty>'}`)
+      .join('; ');
+    console.error(`Invalid empty .gitmodules path mappings: ${invalidSummary}`);
   }
   if (result.invalidIgnoredRequiredOverlap.length) {
     console.error(
