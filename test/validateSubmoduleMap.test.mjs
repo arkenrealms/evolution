@@ -44,6 +44,7 @@ test('normalizeSubmodulePath strips wrappers and slash variants', () => {
   assert.equal(normalizeSubmodulePath('packages/protocol # prod mapping'), 'packages/protocol');
   assert.equal(normalizeSubmodulePath('packages/realm ; mirrored path'), 'packages/realm');
   assert.equal(normalizeSubmodulePath('"packages/shard-beta"'), 'packages/shard-beta');
+  assert.equal(normalizeSubmodulePath("'packages/sigil-protocol'"), 'packages/sigil-protocol');
 });
 
 test('parseGitmodules reports duplicate path mappings deterministically', () => {
@@ -70,12 +71,15 @@ test('parseGitmodules accepts inline comments on path lines', () => {
   path = packages/realm ; canary
 [submodule "packages/shard"]
   path = "packages/shard-beta"
+[submodule "packages/sigil-protocol"]
+  path = 'packages/sigil-protocol'
 `.trim();
 
   const parsed = parseGitmodules(fixture);
   assert.equal(parsed.entries.get('packages/protocol'), 'packages/protocol');
   assert.equal(parsed.entries.get('packages/realm'), 'packages/realm');
   assert.equal(parsed.entries.get('packages/shard-beta'), 'packages/shard');
+  assert.equal(parsed.entries.get('packages/sigil-protocol'), 'packages/sigil-protocol');
 });
 
 test('validateSubmoduleMap reports mapped paths that no longer have gitlinks', () => {

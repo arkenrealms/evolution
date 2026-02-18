@@ -16,7 +16,7 @@ export function normalizeSubmodulePath(value) {
     }
   }
 
-  normalized = normalized.replace(/^"(.+)"$/, '$1').replace(/\\/g, '/');
+  normalized = normalized.replace(/^"(.+)"$/, '$1').replace(/^'(.+)'$/, '$1').replace(/\\/g, '/');
 
   while (normalized.startsWith('./')) {
     normalized = normalized.slice(2);
