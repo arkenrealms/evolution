@@ -381,6 +381,25 @@ test('validateSubmoduleMap reports duplicate gitlinks after normalization', () =
   assert.deepEqual(result.duplicateGitlinks, [{ path: 'packages/protocol', count: 2 }]);
 });
 
+test('validateSubmoduleMap rejects empty gitlink inputs', () => {
+  const fixture = `
+[submodule "packages/protocol"]
+  path = packages/protocol
+[submodule "packages/realm"]
+  path = packages/realm
+[submodule "packages/shard"]
+  path = packages/shard
+`.trim();
+
+  const result = validateSubmoduleMap(repoRoot, {
+    gitmodulesContent: fixture,
+    gitlinks: ['packages/protocol', '   ', '']
+  });
+
+  assert.equal(result.ok, false);
+  assert.deepEqual(result.invalidGitlinks, ['   ', '']);
+});
+
 test('live repo has no duplicate normalized gitlinks', () => {
   const result = validateSubmoduleMap(repoRoot);
   assert.deepEqual(result.duplicateGitlinks, []);

@@ -166,7 +166,17 @@ export function validateSubmoduleMap(
   const { entries: mapping, duplicateMappings, ownerPathConflicts, missingPathOwners, invalidMappings } = parseGitmodules(
     resolvedGitmodulesContent
   );
-  const resolvedGitlinks = (gitlinks ?? listGitlinkPaths(repoRoot)).map((p) => normalizeSubmodulePath(p));
+  const resolvedGitlinkCandidates = (gitlinks ?? listGitlinkPaths(repoRoot)).map((rawPath) => ({
+    rawPath,
+    normalizedPath: normalizeSubmodulePath(rawPath)
+  }));
+  const invalidGitlinks = resolvedGitlinkCandidates
+    .filter(({ normalizedPath }) => !normalizedPath)
+    .map(({ rawPath }) => String(rawPath));
+  const resolvedGitlinks = resolvedGitlinkCandidates
+    .map(({ normalizedPath }) => normalizedPath)
+    .filter(Boolean);
+
   const gitlinkOccurrences = new Map();
   for (const gitlinkPath of resolvedGitlinks) {
     gitlinkOccurrences.set(gitlinkPath, (gitlinkOccurrences.get(gitlinkPath) ?? 0) + 1);
@@ -223,7 +233,8 @@ export function validateSubmoduleMap(
       duplicateGitlinks.length === 0 &&
       invalidIgnoredRequiredOverlap.length === 0 &&
       invalidRequiredPaths.length === 0 &&
-      invalidIgnoredPaths.length === 0,
+      invalidIgnoredPaths.length === 0 &&
+      invalidGitlinks.length === 0,
     missingRequired,
     missingGitlinksForRequired,
     unexpectedGitlinks,
@@ -231,6 +242,7 @@ export function validateSubmoduleMap(
     invalidIgnoredRequiredOverlap,
     invalidRequiredPaths,
     invalidIgnoredPaths,
+    invalidGitlinks,
     duplicateGitlinks,
     duplicateMappings: [...duplicateMappings.entries()].map(([pathKey, owners]) => ({
       path: pathKey,
@@ -303,6 +315,9 @@ if (import.meta.url === `file://${process.argv[1]}`) {
   }
   if (result.invalidIgnoredPaths.length) {
     console.error(`Invalid config: ignored paths include empty values (${result.invalidIgnoredPaths.join(', ')})`);
+  }
+  if (result.invalidGitlinks.length) {
+    console.error(`Invalid gitlink paths include empty values (${result.invalidGitlinks.join(', ')})`);
   }
   process.exit(1);
 }

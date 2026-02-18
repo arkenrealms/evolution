@@ -20,6 +20,7 @@ Ensures wrapper-level submodule metadata stays internally consistent during temp
 - explicit rejection of invalid overlap between required paths and ignored paths.
 - explicit rejection of empty/whitespace-only required/ignored validator config paths.
 - deterministic detection of duplicate normalized gitlink paths when variant raw inputs collapse to the same canonical path.
+- deterministic rejection of empty/whitespace gitlink inputs so malformed injected listings are surfaced as explicit validation errors.
 
 ## Follow-ups
 - Keep incremental migration path open toward Jest + TS when wrapper package adopts Jest runtime dependencies.
