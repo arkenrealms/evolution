@@ -24,7 +24,7 @@ export function parseGitmodules(gitmodulesContent) {
     const match = line.match(/^path\s*=\s*(.+)$/);
     if (!match) continue;
 
-    const mappedPath = match[1];
+    const mappedPath = match[1].trim().replace(/^"(.+)"$/, '$1');
     if (entries.has(mappedPath)) {
       const prior = entries.get(mappedPath);
       const dupes = duplicateMappings.get(mappedPath) ?? [prior];

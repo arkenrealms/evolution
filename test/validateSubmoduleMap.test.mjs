@@ -34,7 +34,7 @@ test('client path stays explicitly ignored under temporary skip policy', () => {
 test('parseGitmodules reports duplicate path mappings deterministically', () => {
   const fixture = `
 [submodule "packages/protocol"]
-  path = packages/protocol
+  path = "packages/protocol"
 [submodule "packages/protocol-mirror"]
   path = packages/protocol
 `.trim();
