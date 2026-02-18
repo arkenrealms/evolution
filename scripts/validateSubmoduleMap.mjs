@@ -55,7 +55,9 @@ export function normalizeSubmodulePath(value) {
 }
 
 export function parseGitmodules(gitmodulesContent) {
-  const lines = gitmodulesContent.split(/\r?\n/);
+  const lines = String(gitmodulesContent ?? '')
+    .replace(/^\uFEFF/, '')
+    .split(/\r?\n/);
   const entries = new Map();
   const duplicateMappings = new Map();
   const ownerMappings = new Map();

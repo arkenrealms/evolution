@@ -13,6 +13,7 @@ Ensures wrapper-level submodule metadata stays internally consistent during temp
 - deterministic path normalization across `.gitmodules` and injected gitlink path variants (including single-quoted `path = '...'` stanzas).
 - parser tolerance for inline comments on `.gitmodules` `path = ...` values, including quote-aware handling when quoted paths contain `#`/`;`.
 - deterministic handling for escaped comment markers (`\#`, `\;`) in unquoted path values so literal characters survive normalization.
+- deterministic handling for UTF-8 BOM-prefixed `.gitmodules` fixtures so first section parsing remains stable.
 - explicit acknowledgement of temporary `packages/client` ignore policy.
 - explicit rejection of invalid overlap between required paths and ignored paths.
 

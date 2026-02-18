@@ -54,6 +54,12 @@ test('normalizeSubmodulePath strips wrappers and slash variants', () => {
   assert.equal(normalizeSubmodulePath('"   "'), '');
 });
 
+test('parseGitmodules handles UTF-8 BOM-prefixed .gitmodules content', () => {
+  const fixture = `\uFEFF[submodule "packages/protocol"]\n  path = packages/protocol`;
+  const parsed = parseGitmodules(fixture);
+  assert.equal(parsed.entries.get('packages/protocol'), 'packages/protocol');
+});
+
 test('parseGitmodules reports duplicate path mappings deterministically', () => {
   const fixture = `
 [submodule "packages/protocol"]
