@@ -38,7 +38,9 @@ test('client path stays explicitly ignored under temporary skip policy', () => {
 test('normalizeSubmodulePath strips wrappers and slash variants', () => {
   assert.equal(normalizeSubmodulePath('"packages/protocol/"'), 'packages/protocol');
   assert.equal(normalizeSubmodulePath('./packages/realm'), 'packages/realm');
-  assert.equal(normalizeSubmodulePath('packages\\shard'), 'packages/shard');
+  assert.equal(normalizeSubmodulePath('././packages/realm//'), 'packages/realm');
+  assert.equal(normalizeSubmodulePath('packages\\\\shard'), 'packages/shard');
+  assert.equal(normalizeSubmodulePath('packages//shard///'), 'packages/shard');
 });
 
 test('parseGitmodules reports duplicate path mappings deterministically', () => {
@@ -106,4 +108,23 @@ test('required paths cannot be hidden by ignoredGitlinks', () => {
 
   assert.equal(result.ok, false);
   assert.deepEqual(result.invalidIgnoredRequiredOverlap, ['packages/realm']);
+});
+
+test('gitlink path variants are normalized before comparison', () => {
+  const fixture = `
+[submodule "packages/protocol"]
+  path = packages/protocol
+[submodule "packages/realm"]
+  path = packages/realm
+[submodule "packages/shard"]
+  path = packages/shard
+`.trim();
+
+  const result = validateSubmoduleMap(repoRoot, {
+    gitmodulesContent: fixture,
+    gitlinks: ['./packages/protocol/', 'packages\\realm', 'packages//shard']
+  });
+
+  assert.equal(result.ok, true);
+  assert.deepEqual(result.missingGitlinksForRequired, []);
 });

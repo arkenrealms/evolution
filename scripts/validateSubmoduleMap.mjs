@@ -4,11 +4,17 @@ import fs from 'node:fs';
 import path from 'node:path';
 
 export function normalizeSubmodulePath(value) {
-  return value
+  let normalized = String(value ?? '')
     .trim()
     .replace(/^"(.+)"$/, '$1')
-    .replace(/\\/g, '/')
-    .replace(/\/+$|^\.\//g, '');
+    .replace(/\\/g, '/');
+
+  while (normalized.startsWith('./')) {
+    normalized = normalized.slice(2);
+  }
+
+  normalized = normalized.replace(/\/+/g, '/').replace(/\/+$/, '');
+  return normalized;
 }
 
 export function parseGitmodules(gitmodulesContent) {
@@ -74,7 +80,7 @@ export function validateSubmoduleMap(
   const gitmodulesPath = path.join(repoRoot, '.gitmodules');
   const resolvedGitmodulesContent = gitmodulesContent ?? fs.readFileSync(gitmodulesPath, 'utf8');
   const { entries: mapping, duplicateMappings } = parseGitmodules(resolvedGitmodulesContent);
-  const resolvedGitlinks = gitlinks ?? listGitlinkPaths(repoRoot);
+  const resolvedGitlinks = (gitlinks ?? listGitlinkPaths(repoRoot)).map((p) => normalizeSubmodulePath(p));
 
   const normalizedRequiredPaths = [...new Set(requiredPaths.map((p) => normalizeSubmodulePath(p)))];
   const normalizedIgnoredGitlinks = [...new Set(ignoredGitlinks.map((p) => normalizeSubmodulePath(p)))];

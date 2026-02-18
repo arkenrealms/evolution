@@ -8,7 +8,7 @@ Ensures wrapper-level submodule metadata stays internally consistent during temp
 - required mappings must correspond to actual `HEAD` gitlinks.
 - absence of unexpected unmapped gitlinks in `packages/*`.
 - deterministic duplicate `.gitmodules` path-mapping detection.
-- deterministic path normalization across `.gitmodules` path variants.
+- deterministic path normalization across `.gitmodules` and injected gitlink path variants.
 - explicit acknowledgement of temporary `packages/client` ignore policy.
 - explicit rejection of invalid overlap between required paths and ignored paths.
 
