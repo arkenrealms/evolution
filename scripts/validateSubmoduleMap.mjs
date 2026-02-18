@@ -40,8 +40,9 @@ function stripInlineComment(rawValue) {
 export function normalizeSubmodulePath(value) {
   let normalized = stripInlineComment(String(value ?? '').trim());
   normalized = normalized
-    .replace(/^"(.+)"$/, '$1')
-    .replace(/^'(.+)'$/, '$1')
+    .replace(/^"(.*)"$/, '$1')
+    .replace(/^'(.*)'$/, '$1')
+    .trim()
     .replace(/\\([#;])/g, '$1')
     .replace(/\\/g, '/');
 

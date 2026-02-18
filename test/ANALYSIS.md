@@ -8,7 +8,7 @@ Ensures wrapper-level submodule metadata stays internally consistent during temp
 - required mappings must correspond to actual `HEAD` gitlinks.
 - absence of unexpected unmapped gitlinks in `packages/*`.
 - deterministic duplicate `.gitmodules` path-mapping detection.
-- deterministic detection of invalid empty/comment-only `.gitmodules` path mappings, including explicit blank `path =` assignments.
+- deterministic detection of invalid empty/comment-only `.gitmodules` path mappings, including explicit blank and quoted-empty `path =` assignments.
 - deterministic path normalization across `.gitmodules` and injected gitlink path variants (including single-quoted `path = '...'` stanzas).
 - parser tolerance for inline comments on `.gitmodules` `path = ...` values, including quote-aware handling when quoted paths contain `#`/`;`.
 - deterministic handling for escaped comment markers (`\#`, `\;`) in unquoted path values so literal characters survive normalization.

@@ -49,6 +49,9 @@ test('normalizeSubmodulePath strips wrappers and slash variants', () => {
   assert.equal(normalizeSubmodulePath("'packages/rea;lm' ; note"), 'packages/rea;lm');
   assert.equal(normalizeSubmodulePath('packages/proto\\#col # note'), 'packages/proto#col');
   assert.equal(normalizeSubmodulePath('packages/rea\\;lm ; note'), 'packages/rea;lm');
+  assert.equal(normalizeSubmodulePath('""'), '');
+  assert.equal(normalizeSubmodulePath("''"), '');
+  assert.equal(normalizeSubmodulePath('"   "'), '');
 });
 
 test('parseGitmodules reports duplicate path mappings deterministically', () => {
@@ -102,6 +105,12 @@ test('parseGitmodules reports invalid empty path mappings', () => {
   path = ; intentionally blank
 [submodule "packages/empty"]
   path =
+[submodule "packages/quoted-empty"]
+  path = ""
+[submodule "packages/single-quoted-empty"]
+  path = ''
+[submodule "packages/quoted-space"]
+  path = "   "
 `.trim();
 
   const parsed = parseGitmodules(fixture);
@@ -109,7 +118,10 @@ test('parseGitmodules reports invalid empty path mappings', () => {
   assert.deepEqual(parsed.invalidMappings, [
     { owner: 'packages/realm', rawPath: '# intentionally blank' },
     { owner: 'packages/shard', rawPath: '; intentionally blank' },
-    { owner: 'packages/empty', rawPath: '' }
+    { owner: 'packages/empty', rawPath: '' },
+    { owner: 'packages/quoted-empty', rawPath: '""' },
+    { owner: 'packages/single-quoted-empty', rawPath: "''" },
+    { owner: 'packages/quoted-space', rawPath: '"   "' }
   ]);
 });
 
