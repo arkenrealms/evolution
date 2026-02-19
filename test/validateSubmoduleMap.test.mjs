@@ -368,6 +368,28 @@ test('validator config rejects duplicate required and ignored path entries', () 
   assert.deepEqual(result.duplicateIgnoredPaths, ['packages/client']);
 });
 
+test('validator config rejects unsafe required and ignored path entries', () => {
+  const fixture = `
+[submodule "packages/protocol"]
+  path = packages/protocol
+[submodule "packages/realm"]
+  path = packages/realm
+[submodule "packages/shard"]
+  path = packages/shard
+`.trim();
+
+  const result = validateSubmoduleMap(repoRoot, {
+    gitmodulesContent: fixture,
+    gitlinks: ['packages/protocol', 'packages/realm', 'packages/shard'],
+    requiredPaths: ['packages/protocol', '../packages/realm'],
+    ignoredGitlinks: ['packages/client', 'https://example.invalid/ignored']
+  });
+
+  assert.equal(result.ok, false);
+  assert.deepEqual(result.unsafeRequiredPaths, ['../packages/realm']);
+  assert.deepEqual(result.unsafeIgnoredPaths, ['https://example.invalid/ignored']);
+});
+
 test('validateSubmoduleMap fails when same owner maps to conflicting paths', () => {
   const fixture = `
 [submodule "packages/protocol"]

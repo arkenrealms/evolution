@@ -209,6 +209,12 @@ export function validateSubmoduleMap(
   const invalidIgnoredPaths = normalizedIgnoredCandidates
     .filter(({ normalizedPath }) => !normalizedPath)
     .map(({ rawPath }) => String(rawPath));
+  const unsafeRequiredPaths = normalizedRequiredCandidates
+    .filter(({ normalizedPath }) => normalizedPath && isInvalidSubmodulePath(normalizedPath))
+    .map(({ rawPath }) => String(rawPath));
+  const unsafeIgnoredPaths = normalizedIgnoredCandidates
+    .filter(({ normalizedPath }) => normalizedPath && isInvalidSubmodulePath(normalizedPath))
+    .map(({ rawPath }) => String(rawPath));
 
   const requiredNormalizedValues = normalizedRequiredCandidates
     .map(({ normalizedPath }) => normalizedPath)
@@ -253,6 +259,8 @@ export function validateSubmoduleMap(
       invalidIgnoredRequiredOverlap.length === 0 &&
       invalidRequiredPaths.length === 0 &&
       invalidIgnoredPaths.length === 0 &&
+      unsafeRequiredPaths.length === 0 &&
+      unsafeIgnoredPaths.length === 0 &&
       invalidGitlinks.length === 0 &&
       duplicateRequiredPaths.length === 0 &&
       duplicateIgnoredPaths.length === 0,
@@ -263,6 +271,8 @@ export function validateSubmoduleMap(
     invalidIgnoredRequiredOverlap,
     invalidRequiredPaths,
     invalidIgnoredPaths,
+    unsafeRequiredPaths,
+    unsafeIgnoredPaths,
     invalidGitlinks,
     duplicateRequiredPaths,
     duplicateIgnoredPaths,
@@ -338,6 +348,12 @@ if (import.meta.url === `file://${process.argv[1]}`) {
   }
   if (result.invalidIgnoredPaths.length) {
     console.error(`Invalid config: ignored paths include empty values (${result.invalidIgnoredPaths.join(', ')})`);
+  }
+  if (result.unsafeRequiredPaths.length) {
+    console.error(`Invalid config: required paths include unsafe values (${result.unsafeRequiredPaths.join(', ')})`);
+  }
+  if (result.unsafeIgnoredPaths.length) {
+    console.error(`Invalid config: ignored paths include unsafe values (${result.unsafeIgnoredPaths.join(', ')})`);
   }
   if (result.invalidGitlinks.length) {
     console.error(`Invalid gitlink paths include empty values (${result.invalidGitlinks.join(', ')})`);
