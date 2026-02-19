@@ -192,9 +192,12 @@ export function validateSubmoduleMap(
   const invalidGitlinks = resolvedGitlinkCandidates
     .filter(({ normalizedPath }) => !normalizedPath)
     .map(({ rawPath }) => String(rawPath));
+  const unsafeGitlinks = resolvedGitlinkCandidates
+    .filter(({ normalizedPath }) => normalizedPath && isInvalidSubmodulePath(normalizedPath))
+    .map(({ rawPath }) => String(rawPath));
   const resolvedGitlinks = resolvedGitlinkCandidates
     .map(({ normalizedPath }) => normalizedPath)
-    .filter(Boolean);
+    .filter((normalizedPath) => normalizedPath && !isInvalidSubmodulePath(normalizedPath));
 
   const gitlinkOccurrences = new Map();
   for (const gitlinkPath of resolvedGitlinks) {
@@ -270,6 +273,7 @@ export function validateSubmoduleMap(
       unsafeRequiredPaths.length === 0 &&
       unsafeIgnoredPaths.length === 0 &&
       invalidGitlinks.length === 0 &&
+      unsafeGitlinks.length === 0 &&
       duplicateRequiredPaths.length === 0 &&
       duplicateIgnoredPaths.length === 0,
     missingRequired,
@@ -282,6 +286,7 @@ export function validateSubmoduleMap(
     unsafeRequiredPaths,
     unsafeIgnoredPaths,
     invalidGitlinks,
+    unsafeGitlinks,
     duplicateRequiredPaths,
     duplicateIgnoredPaths,
     duplicateGitlinks,
@@ -369,6 +374,9 @@ if (import.meta.url === `file://${process.argv[1]}`) {
   }
   if (result.invalidGitlinks.length) {
     console.error(`Invalid gitlink paths include empty values (${result.invalidGitlinks.join(', ')})`);
+  }
+  if (result.unsafeGitlinks.length) {
+    console.error(`Invalid gitlink paths include unsafe values (${result.unsafeGitlinks.join(', ')})`);
   }
   if (result.duplicateRequiredPaths.length) {
     console.error(

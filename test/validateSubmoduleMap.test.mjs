@@ -566,6 +566,31 @@ test('validateSubmoduleMap rejects empty gitlink inputs', () => {
   assert.deepEqual(result.invalidGitlinks, ['   ', '']);
 });
 
+test('validateSubmoduleMap rejects unsafe gitlink inputs', () => {
+  const fixture = `
+[submodule "packages/protocol"]
+  path = packages/protocol
+[submodule "packages/realm"]
+  path = packages/realm
+[submodule "packages/shard"]
+  path = packages/shard
+`.trim();
+
+  const result = validateSubmoduleMap(repoRoot, {
+    gitmodulesContent: fixture,
+    gitlinks: ['packages/protocol', '../packages/realm', 'ssh://git@example.invalid/repo']
+  });
+
+  assert.equal(result.ok, false);
+  assert.deepEqual(result.unsafeGitlinks, ['../packages/realm', 'ssh://git@example.invalid/repo']);
+  assert.deepEqual(result.missingGitlinksForRequired, ['packages/realm', 'packages/shard']);
+});
+
+test('live repo has no unsafe gitlink paths', () => {
+  const result = validateSubmoduleMap(repoRoot);
+  assert.deepEqual(result.unsafeGitlinks, []);
+});
+
 test('live repo has no duplicate normalized gitlinks', () => {
   const result = validateSubmoduleMap(repoRoot);
   assert.deepEqual(result.duplicateGitlinks, []);
