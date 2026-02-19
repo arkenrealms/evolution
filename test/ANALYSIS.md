@@ -22,6 +22,7 @@ Ensures wrapper-level submodule metadata stays internally consistent during temp
 - explicit rejection of empty/whitespace-only required/ignored validator config paths.
 - explicit rejection of duplicate normalized required/ignored validator config paths.
 - deterministic detection of duplicate normalized gitlink paths when variant raw inputs collapse to the same canonical path.
+- deterministic de-duplication of unexpected gitlink reports when multiple raw variants normalize to the same unmapped path.
 - deterministic rejection of empty/whitespace gitlink inputs so malformed injected listings are surfaced as explicit validation errors.
 
 ## Follow-ups

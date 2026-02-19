@@ -18,8 +18,9 @@ Provides lightweight guardrails that can run without recursive submodule initial
 - Reject invalid empty/comment-only `.gitmodules` `path = ...` mappings before they can silently collapse to root-equivalent keys (including explicit blank and quoted-empty `path =` assignments).
 - Reject unsafe `.gitmodules` path mappings that try to escape/anchor outside repo scope (e.g., `../...`, `/...`, `C:/...`) or use URL-like schemes (`https://...`, `ssh://...`).
 - Detect submodule-owner sections that omit a `path = ...` mapping entirely, preventing silent pass-through of partially-defined submodule stanzas.
-- Detect stale `.gitmodules` mappings that are no longer present as `HEAD` gitlinks (`mappedWithoutGitlink`).
+- Detect stale `.gitmodules` mappings that are no longer present as `HEAD` gitlinks (`mappedWithoutGitlink`, sorted deterministically).
 - Detect duplicate normalized gitlink paths in `HEAD` listing (`duplicateGitlinks`) to catch parser/input regressions that collapse distinct raw paths into the same canonical key.
+- De-duplicate and sort `unexpectedGitlinks` after normalization so repeated raw variants report once with stable output ordering.
 - Reject empty/whitespace-only gitlink inputs (`invalidGitlinks`) so malformed injected listings fail explicitly instead of silently normalizing away.
 - Allow explicit temporary skip for `packages/client`.
 - Guard against invalid validator configuration where `ignoredGitlinks` overlaps required paths.

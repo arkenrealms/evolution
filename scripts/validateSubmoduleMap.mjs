@@ -231,12 +231,13 @@ export function validateSubmoduleMap(
 
   const missingRequired = normalizedRequiredPaths.filter((p) => !mapping.has(p));
   const missingGitlinksForRequired = normalizedRequiredPaths.filter((p) => mapping.has(p) && !gitlinkSet.has(p));
-  const unexpectedGitlinks = resolvedGitlinks.filter(
-    (p) => !mapping.has(p) && !normalizedIgnoredGitlinks.includes(p)
-  );
+  const unexpectedGitlinks = [...new Set(
+    resolvedGitlinks.filter((p) => !mapping.has(p) && !normalizedIgnoredGitlinks.includes(p))
+  )].sort();
   const mappedWithoutGitlink = [...mapping.keys()]
     .filter((p) => !gitlinkSet.has(p))
-    .filter((p) => !normalizedIgnoredGitlinks.includes(p));
+    .filter((p) => !normalizedIgnoredGitlinks.includes(p))
+    .sort();
 
   return {
     ok:
