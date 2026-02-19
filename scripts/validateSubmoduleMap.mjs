@@ -62,6 +62,7 @@ function isInvalidSubmodulePath(mappedPath) {
   if (!mappedPath) return true;
   if (mappedPath.startsWith('/')) return true;
   if (/^[A-Za-z]:\//.test(mappedPath)) return true;
+  if (/^[A-Za-z][A-Za-z0-9+.-]*:/.test(mappedPath)) return true;
   return mappedPath.split('/').includes('..');
 }
 

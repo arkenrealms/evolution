@@ -207,6 +207,10 @@ test('parseGitmodules reports invalid empty/unsafe path mappings', () => {
   path = /packages/protocol
 [submodule "packages/windows-absolute"]
   path = C:\\packages\\protocol
+[submodule "packages/url-http"]
+  path = https://example.invalid/repo
+[submodule "packages/url-ssh"]
+  path = ssh://git@example.invalid/repo
 `.trim();
 
   const parsed = parseGitmodules(fixture);
@@ -220,7 +224,9 @@ test('parseGitmodules reports invalid empty/unsafe path mappings', () => {
     { owner: 'packages/quoted-space', rawPath: '"   "' },
     { owner: 'packages/traversal', rawPath: '../packages/protocol' },
     { owner: 'packages/absolute', rawPath: '/packages/protocol' },
-    { owner: 'packages/windows-absolute', rawPath: 'C:\\packages\\protocol' }
+    { owner: 'packages/windows-absolute', rawPath: 'C:\\packages\\protocol' },
+    { owner: 'packages/url-http', rawPath: 'https://example.invalid/repo' },
+    { owner: 'packages/url-ssh', rawPath: 'ssh://git@example.invalid/repo' }
   ]);
 });
 

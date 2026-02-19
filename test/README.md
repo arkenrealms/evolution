@@ -13,7 +13,7 @@ Minimal wrapper-level regression checks for `arken/packages/evolution`.
 - guards duplicate `.gitmodules` path mappings (fixture-level parser behavior + live-repo check).
 - guards conflicting per-owner path remaps in `.gitmodules` (same owner mapped to multiple paths).
 - guards invalid empty/comment-only `.gitmodules` path mappings (fixture-level parser behavior + live-repo check), including explicit blank and quoted-empty `path =` assignments.
-- guards unsafe `.gitmodules` path mappings (`..` traversal + absolute paths) so malformed entries fail deterministically.
+- guards unsafe `.gitmodules` path mappings (`..` traversal + absolute paths + URL-like scheme paths such as `https://...` / `ssh://...`) so malformed entries fail deterministically.
 - guards `.gitmodules` submodule sections that omit `path = ...` entirely (fixture-level + live-repo check).
 - verifies parser path normalization for single/double-quoted, repeated/embedded dot-segment (`./`) variants, duplicate-slash, trailing-slash, backslash-separated, case-insensitive path-key forms (`path`/`Path`/`PATH`), flexible section-header forms (`[submodule ...]` with mixed case/spacing/comments), and inline-commented path variants (including quoted paths that contain `#`/`;` and escaped comment markers in unquoted values).
 - verifies BOM-prefixed `.gitmodules` fixtures parse the first section reliably (no dropped initial mapping).
