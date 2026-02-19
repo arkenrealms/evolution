@@ -17,6 +17,7 @@ Provides lightweight guardrails that can run without recursive submodule initial
 - Detect per-owner conflicting path re-maps (same `[submodule "..."]` owner bound to multiple normalized `path` values), aggregating repeats into a single deterministic conflict record.
 - Reject invalid empty/comment-only `.gitmodules` `path = ...` mappings before they can silently collapse to root-equivalent keys (including explicit blank and quoted-empty `path =` assignments).
 - Reject unsafe `.gitmodules` path mappings that try to escape/anchor outside repo scope (e.g., `../...`, `/...`, `C:/...`) or use URL-like schemes (`https://...`, `ssh://...`).
+- Reject `.gitmodules` and gitlink path inputs containing control characters (`\u0000`-`\u001F`, `\u007F`) to prevent hidden-path injection edge cases.
 - CLI failure output now reports these under a unified `Invalid .gitmodules path mappings` heading to better reflect that both empty and unsafe mappings are rejected.
 - Detect submodule-owner sections that omit a `path = ...` mapping entirely, preventing silent pass-through of partially-defined submodule stanzas.
 - Detect stale `.gitmodules` mappings that are no longer present as `HEAD` gitlinks (`mappedWithoutGitlink`, sorted deterministically).

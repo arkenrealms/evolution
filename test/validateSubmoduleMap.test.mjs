@@ -248,6 +248,8 @@ test('parseGitmodules reports invalid empty/unsafe path mappings', () => {
   path = https://example.invalid/repo
 [submodule "packages/url-ssh"]
   path = ssh://git@example.invalid/repo
+[submodule "packages/control-char"]
+  path = packages/proto\u0000col
 `.trim();
 
   const parsed = parseGitmodules(fixture);
@@ -263,7 +265,8 @@ test('parseGitmodules reports invalid empty/unsafe path mappings', () => {
     'packages/absolute',
     'packages/windows-absolute',
     'packages/url-http',
-    'packages/url-ssh'
+    'packages/url-ssh',
+    'packages/control-char'
   ]);
   assert.deepEqual(parsed.invalidMappings, [
     { owner: 'packages/realm', rawPath: '# intentionally blank' },
@@ -276,7 +279,8 @@ test('parseGitmodules reports invalid empty/unsafe path mappings', () => {
     { owner: 'packages/absolute', rawPath: '/packages/protocol' },
     { owner: 'packages/windows-absolute', rawPath: 'C:\\packages\\protocol' },
     { owner: 'packages/url-http', rawPath: 'https://example.invalid/repo' },
-    { owner: 'packages/url-ssh', rawPath: 'ssh://git@example.invalid/repo' }
+    { owner: 'packages/url-ssh', rawPath: 'ssh://git@example.invalid/repo' },
+    { owner: 'packages/control-char', rawPath: 'packages/proto\u0000col' }
   ]);
 });
 
@@ -455,13 +459,13 @@ test('validator config rejects unsafe required and ignored path entries', () => 
   const result = validateSubmoduleMap(repoRoot, {
     gitmodulesContent: fixture,
     gitlinks: ['packages/protocol', 'packages/realm', 'packages/shard'],
-    requiredPaths: ['packages/protocol', '../packages/realm'],
-    ignoredGitlinks: ['packages/client', 'https://example.invalid/ignored']
+    requiredPaths: ['packages/protocol', '../packages/realm', 'packages/shard\u0000legacy'],
+    ignoredGitlinks: ['packages/client', 'https://example.invalid/ignored', 'packages/client\u001Fshadow']
   });
 
   assert.equal(result.ok, false);
-  assert.deepEqual(result.unsafeRequiredPaths, ['../packages/realm']);
-  assert.deepEqual(result.unsafeIgnoredPaths, ['https://example.invalid/ignored']);
+  assert.deepEqual(result.unsafeRequiredPaths, ['../packages/realm', 'packages/shard\u0000legacy']);
+  assert.deepEqual(result.unsafeIgnoredPaths, ['https://example.invalid/ignored', 'packages/client\u001Fshadow']);
 });
 
 test('validateSubmoduleMap fails when same owner maps to conflicting paths', () => {

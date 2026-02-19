@@ -26,7 +26,7 @@ Ensures wrapper-level submodule metadata stays internally consistent during temp
 - deterministic detection of duplicate normalized gitlink paths when variant raw inputs collapse to the same canonical path.
 - deterministic de-duplication of unexpected gitlink reports when multiple raw variants normalize to the same unmapped path.
 - deterministic rejection of empty/whitespace gitlink inputs so malformed injected listings are surfaced as explicit validation errors.
-- deterministic rejection of unsafe gitlink path inputs (traversal/absolute/scheme) so malformed injected listings cannot pass through as generic mismatch noise.
+- deterministic rejection of unsafe gitlink path inputs (traversal/absolute/scheme/control-char) so malformed injected listings cannot pass through as generic mismatch noise.
 
 ## Follow-ups
 - Keep incremental migration path open toward Jest + TS when wrapper package adopts Jest runtime dependencies.
