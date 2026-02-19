@@ -127,9 +127,9 @@ export function parseGitmodules(gitmodulesContent) {
       if (prior === current) {
         continue;
       }
-      const dupes = duplicateMappings.get(mappedPath) ?? [prior];
-      dupes.push(current);
-      duplicateMappings.set(mappedPath, dupes);
+      const dupes = new Set(duplicateMappings.get(mappedPath) ?? [prior]);
+      dupes.add(current);
+      duplicateMappings.set(mappedPath, [...dupes]);
       continue;
     }
 

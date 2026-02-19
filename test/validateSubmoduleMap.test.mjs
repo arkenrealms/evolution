@@ -120,6 +120,24 @@ test('parseGitmodules reports duplicate path mappings deterministically', () => 
   assert.deepEqual(parsed.ownerPathConflicts, []);
 });
 
+test('parseGitmodules deduplicates repeated duplicate-owner mappings', () => {
+  const fixture = `
+[submodule "packages/protocol"]
+  path = packages/protocol
+[submodule "packages/protocol-mirror"]
+  path = packages/protocol
+[submodule "packages/protocol-mirror"]
+  path = ./packages/protocol/
+`.trim();
+
+  const parsed = parseGitmodules(fixture);
+  assert.equal(parsed.entries.get('packages/protocol'), 'packages/protocol');
+  assert.deepEqual(parsed.duplicateMappings.get('packages/protocol'), [
+    'packages/protocol',
+    'packages/protocol-mirror'
+  ]);
+});
+
 
 test('parseGitmodules ignores repeated identical owner/path mappings', () => {
   const fixture = `

@@ -7,7 +7,7 @@ Ensures wrapper-level submodule metadata stays internally consistent during temp
 - required mapping presence for `packages/protocol`, `packages/realm`, `packages/shard`.
 - required mappings must correspond to actual `HEAD` gitlinks.
 - absence of unexpected unmapped gitlinks in `packages/*`.
-- deterministic duplicate `.gitmodules` path-mapping detection.
+- deterministic duplicate `.gitmodules` path-mapping detection, including de-duplication when duplicate owners repeat the same conflicting mapping lines.
 - deterministic detection of conflicting per-owner path remaps in `.gitmodules`.
 - deterministic detection of invalid empty/comment-only `.gitmodules` path mappings, including explicit blank and quoted-empty `path =` assignments.
 - deterministic rejection of unsafe path mappings with traversal (`..`), absolute roots (`/...`, `C:/...`), or URL-like scheme paths (`https://...`, `ssh://...`).
