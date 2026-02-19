@@ -60,6 +60,7 @@ export function normalizeSubmodulePath(value) {
 
 function isInvalidSubmodulePath(mappedPath) {
   if (!mappedPath) return true;
+  if (/[\u0000-\u001F\u007F]/.test(mappedPath)) return true;
   if (mappedPath.startsWith('/')) return true;
   if (/^[A-Za-z]:\//.test(mappedPath)) return true;
   if (/^[A-Za-z][A-Za-z0-9+.-]*:/.test(mappedPath)) return true;
