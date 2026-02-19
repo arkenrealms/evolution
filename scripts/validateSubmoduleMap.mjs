@@ -136,6 +136,9 @@ export function parseGitmodules(gitmodulesContent) {
   const missingPathOwners = [...ownerStates.entries()]
     .filter(([, state]) => !state.sawPathLine)
     .map(([owner]) => owner);
+  const ownersWithoutValidPath = [...ownerStates.entries()]
+    .filter(([, state]) => state.sawPathLine && !state.hasValidMapping)
+    .map(([owner]) => owner);
 
   return {
     entries,
@@ -145,6 +148,7 @@ export function parseGitmodules(gitmodulesContent) {
       paths: [...paths]
     })),
     missingPathOwners,
+    ownersWithoutValidPath,
     invalidMappings
   };
 }
@@ -175,7 +179,7 @@ export function validateSubmoduleMap(
 ) {
   const gitmodulesPath = path.join(repoRoot, '.gitmodules');
   const resolvedGitmodulesContent = gitmodulesContent ?? fs.readFileSync(gitmodulesPath, 'utf8');
-  const { entries: mapping, duplicateMappings, ownerPathConflicts, missingPathOwners, invalidMappings } = parseGitmodules(
+  const { entries: mapping, duplicateMappings, ownerPathConflicts, missingPathOwners, ownersWithoutValidPath, invalidMappings } = parseGitmodules(
     resolvedGitmodulesContent
   );
   const resolvedGitlinkCandidates = (gitlinks ?? listGitlinkPaths(repoRoot)).map((rawPath) => ({
@@ -254,6 +258,7 @@ export function validateSubmoduleMap(
       duplicateMappings.size === 0 &&
       ownerPathConflicts.length === 0 &&
       missingPathOwners.length === 0 &&
+      ownersWithoutValidPath.length === 0 &&
       invalidMappings.length === 0 &&
       duplicateGitlinks.length === 0 &&
       invalidIgnoredRequiredOverlap.length === 0 &&
@@ -283,6 +288,7 @@ export function validateSubmoduleMap(
     })),
     ownerPathConflicts,
     missingPathOwners,
+    ownersWithoutValidPath,
     invalidMappings,
     mappedPaths: [...mapping.keys()].sort(),
     gitlinks: [...resolvedGitlinks].sort(),
@@ -325,6 +331,9 @@ if (import.meta.url === `file://${process.argv[1]}`) {
   }
   if (result.missingPathOwners.length) {
     console.error(`Submodule sections missing path mappings: ${result.missingPathOwners.join(', ')}`);
+  }
+  if (result.ownersWithoutValidPath.length) {
+    console.error(`Submodule sections without any valid path mapping: ${result.ownersWithoutValidPath.join(', ')}`);
   }
   if (result.ownerPathConflicts.length) {
     const ownerConflictSummary = result.ownerPathConflicts

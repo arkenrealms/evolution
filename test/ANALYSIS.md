@@ -12,6 +12,7 @@ Ensures wrapper-level submodule metadata stays internally consistent during temp
 - deterministic detection of invalid empty/comment-only `.gitmodules` path mappings, including explicit blank and quoted-empty `path =` assignments.
 - deterministic rejection of unsafe path mappings with traversal (`..`), absolute roots (`/...`, `C:/...`), or URL-like scheme paths (`https://...`, `ssh://...`).
 - deterministic detection of submodule-owner sections missing `path = ...` mappings.
+- deterministic detection of submodule owners that only provide invalid `path = ...` values (no valid mapping survives normalization).
 - deterministic path normalization across `.gitmodules` and injected gitlink path variants (including repeated/embedded dot segments like `./`, single-quoted `path = '...'` stanzas, and case-insensitive `Path` keys).
 - parser tolerance for inline comments on `.gitmodules` `path = ...` values, including quote-aware handling when quoted paths contain `#`/`;`.
 - parser tolerance for `.gitmodules` section-header variants (mixed-case `submodule`, extra bracket spacing, and trailing comments).

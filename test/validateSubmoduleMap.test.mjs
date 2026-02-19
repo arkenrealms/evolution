@@ -215,6 +215,19 @@ test('parseGitmodules reports invalid empty/unsafe path mappings', () => {
 
   const parsed = parseGitmodules(fixture);
   assert.equal(parsed.entries.get('packages/protocol'), 'packages/protocol');
+  assert.deepEqual(parsed.ownersWithoutValidPath, [
+    'packages/realm',
+    'packages/shard',
+    'packages/empty',
+    'packages/quoted-empty',
+    'packages/single-quoted-empty',
+    'packages/quoted-space',
+    'packages/traversal',
+    'packages/absolute',
+    'packages/windows-absolute',
+    'packages/url-http',
+    'packages/url-ssh'
+  ]);
   assert.deepEqual(parsed.invalidMappings, [
     { owner: 'packages/realm', rawPath: '# intentionally blank' },
     { owner: 'packages/shard', rawPath: '; intentionally blank' },
@@ -299,9 +312,33 @@ test('validateSubmoduleMap fails when submodule owner has no path mapping', () =
   assert.deepEqual(result.missingPathOwners, ['packages/realm']);
 });
 
+test('validateSubmoduleMap flags owners that never declare a valid path', () => {
+  const fixture = `
+[submodule "packages/protocol"]
+  path = packages/protocol
+[submodule "packages/realm"]
+  path = # intentionally blank
+[submodule "packages/shard"]
+  path = ../packages/shard
+`.trim();
+
+  const result = validateSubmoduleMap(repoRoot, {
+    gitmodulesContent: fixture,
+    gitlinks: ['packages/protocol', 'packages/realm', 'packages/shard']
+  });
+
+  assert.equal(result.ok, false);
+  assert.deepEqual(result.ownersWithoutValidPath, ['packages/realm', 'packages/shard']);
+});
+
 test('no missing path-owner mappings are present in live .gitmodules', () => {
   const result = validateSubmoduleMap(repoRoot);
   assert.deepEqual(result.missingPathOwners, []);
+});
+
+test('all live submodule owners declare at least one valid path mapping', () => {
+  const result = validateSubmoduleMap(repoRoot);
+  assert.deepEqual(result.ownersWithoutValidPath, []);
 });
 
 test('required paths cannot be hidden by ignoredGitlinks', () => {
