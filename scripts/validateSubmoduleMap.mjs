@@ -330,7 +330,7 @@ if (import.meta.url === `file://${process.argv[1]}`) {
     const invalidSummary = result.invalidMappings
       .map(({ owner, rawPath }) => `${owner} => ${String(rawPath).trim() || '<empty>'}`)
       .join('; ');
-    console.error(`Invalid empty .gitmodules path mappings: ${invalidSummary}`);
+    console.error(`Invalid .gitmodules path mappings: ${invalidSummary}`);
   }
   if (result.missingPathOwners.length) {
     console.error(`Submodule sections missing path mappings: ${result.missingPathOwners.join(', ')}`);
