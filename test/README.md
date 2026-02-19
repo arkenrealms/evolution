@@ -10,7 +10,7 @@ Minimal wrapper-level regression checks for `arken/packages/evolution`.
 - validates required mappings are backed by actual `HEAD` gitlinks.
 - guards against newly introduced unmapped gitlinks (except explicit temporary client skip).
 - guards stale `.gitmodules` mappings that no longer resolve to `HEAD` gitlinks.
-- guards duplicate `.gitmodules` path mappings (fixture-level parser behavior + live-repo check).
+- guards duplicate `.gitmodules` path mappings across different submodule owners (fixture-level parser behavior + live-repo check), while allowing repeated identical owner/path declarations.
 - guards conflicting per-owner path remaps in `.gitmodules` (same owner mapped to multiple paths).
 - guards invalid empty/comment-only `.gitmodules` path mappings (fixture-level parser behavior + live-repo check), including explicit blank and quoted-empty `path =` assignments.
 - guards unsafe `.gitmodules` path mappings (`..` traversal + absolute paths + URL-like scheme paths such as `https://...` / `ssh://...`) so malformed entries fail deterministically.
