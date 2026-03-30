@@ -60,36 +60,36 @@ This repository is currently a submodule container. Core code lives in nested su
 
 ### Re-verification (2026-02-17 3:45 PM PST)
 - Re-ran from repo root:
-  - `git -C /Users/web/.openclaw/workspace-nel/arken/packages/evolution submodule sync --recursive`
-  - `git -C /Users/web/.openclaw/workspace-nel/arken/packages/evolution submodule update --init --recursive`
+  - `git -C /Users/web/shared/arken/packages/evolution submodule sync --recursive`
+  - `git -C /Users/web/shared/arken/packages/evolution submodule update --init --recursive`
 - Result unchanged:
   - `fatal: No url found for submodule path 'packages/client' in .gitmodules`
 
 ### Re-verification (2026-02-17 3:54 PM PST)
 - Re-ran from repo root:
-  - `git -C /Users/web/.openclaw/workspace-nel/arken/packages/evolution submodule sync --recursive`
-  - `git -C /Users/web/.openclaw/workspace-nel/arken/packages/evolution submodule update --init --recursive`
+  - `git -C /Users/web/shared/arken/packages/evolution submodule sync --recursive`
+  - `git -C /Users/web/shared/arken/packages/evolution submodule update --init --recursive`
 - Result unchanged:
   - `fatal: No url found for submodule path 'packages/client' in .gitmodules`
 
 ### Re-verification (2026-02-17 4:24 PM PST)
 - Re-ran from repo root:
-  - `git -C /Users/web/.openclaw/workspace-nel/arken/packages/evolution submodule sync --recursive`
-  - `git -C /Users/web/.openclaw/workspace-nel/arken/packages/evolution submodule update --init --recursive`
+  - `git -C /Users/web/shared/arken/packages/evolution submodule sync --recursive`
+  - `git -C /Users/web/shared/arken/packages/evolution submodule update --init --recursive`
 - Result unchanged:
   - `fatal: No url found for submodule path 'packages/client' in .gitmodules`
 
 ### Re-verification (2026-02-17 4:26 PM PST)
 - Re-ran from repo root:
-  - `git -C /Users/web/.openclaw/workspace-nel/arken/packages/evolution submodule sync --recursive`
-  - `git -C /Users/web/.openclaw/workspace-nel/arken/packages/evolution submodule update --init --recursive`
+  - `git -C /Users/web/shared/arken/packages/evolution submodule sync --recursive`
+  - `git -C /Users/web/shared/arken/packages/evolution submodule update --init --recursive`
 - Result unchanged:
   - `fatal: No url found for submodule path 'packages/client' in .gitmodules`
 
 ### Re-verification (2026-02-17 4:31 PM PST)
 - Re-ran from repo root:
-  - `git -C /Users/web/.openclaw/workspace-nel/arken/packages/evolution submodule sync --recursive`
-  - `git -C /Users/web/.openclaw/workspace-nel/arken/packages/evolution submodule update --init --recursive`
+  - `git -C /Users/web/shared/arken/packages/evolution submodule sync --recursive`
+  - `git -C /Users/web/shared/arken/packages/evolution submodule update --init --recursive`
 - Result unchanged:
   - `fatal: No url found for submodule path 'packages/client' in .gitmodules`
 
